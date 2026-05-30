@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createMuralPost, listMuralPosts } from "@/services/muralService";
+import { getParticipant } from "@/lib/participantSession";
 
 const cardStyles = [
   "from-purple-100 to-purple-50 border-purple-200",
@@ -18,10 +19,18 @@ const cardStyles = [
   "from-rose-100 to-rose-50 border-rose-200",
 ];
 
+function getParticipantName() {
+  const participant = getParticipant();
+  return participant?.fullName || "";
+}
+
 export default function Mural() {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(() => getParticipantName());
   const [message, setMessage] = useState("");
   const queryClient = useQueryClient();
+
+  const participant = getParticipant();
+  const firstName = participant?.firstName || "irmão";
 
   const {
     data: posts = [],
@@ -37,8 +46,12 @@ export default function Mural() {
     mutationFn: createMuralPost,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["muralPosts"] });
-      setName("");
       setMessage("");
+
+      const savedName = getParticipantName();
+      if (savedName) {
+        setName(savedName);
+      }
     },
   });
 
@@ -78,8 +91,12 @@ export default function Mural() {
           Mural da Jornada
         </h1>
 
-        <p className="mb-5 text-sm text-muted-foreground">
+        <p className="mb-2 text-sm text-muted-foreground">
           O que você espera que Deus fale com você no congresso?
+        </p>
+
+        <p className="mb-5 rounded-2xl border border-purple-100 bg-white/70 px-3 py-2 text-xs font-semibold text-purple-700 shadow-sm">
+          Olá, {firstName}! Sua participação ajuda a fortalecer esta caminhada.
         </p>
       </motion.div>
 

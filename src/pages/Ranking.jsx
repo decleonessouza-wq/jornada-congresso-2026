@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Star, Crown, Medal, Send, X, Sparkles } from "lucide-react";
+import { Trophy, Star, Crown, Medal, Send, X, Sparkles, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useJourneyProgress } from "../lib/useJourneyProgress";
 import { playClick, playCelebrate } from "../lib/sounds";
 import { createUserScore, listUserScores } from "@/services/userScoreService";
+import { getParticipant } from "@/lib/participantSession";
 
 const AVATAR_COLORS = [
   "from-purple-400 to-violet-600",
@@ -16,6 +17,11 @@ const AVATAR_COLORS = [
   "from-pink-400 to-rose-500",
   "from-indigo-400 to-purple-500",
 ];
+
+function getParticipantName() {
+  const participant = getParticipant();
+  return participant?.fullName || "";
+}
 
 const RankBadge = ({ rank }) => {
   if (rank === 1) return <Crown className="h-5 w-5 fill-amber-300 text-amber-400" />;
@@ -31,8 +37,11 @@ const RankBadge = ({ rank }) => {
 
 export default function Ranking() {
   const [showForm, setShowForm] = useState(false);
-  const [playerName, setPlayerName] = useState("");
+  const [playerName, setPlayerName] = useState(() => getParticipantName());
   const queryClient = useQueryClient();
+
+  const participant = getParticipant();
+  const firstName = participant?.firstName || "irmão";
 
   const { getTotalScore, getCompletedCount } = useJourneyProgress();
 
@@ -54,20 +63,34 @@ export default function Ranking() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userScores"] });
       setShowForm(false);
-      setPlayerName("");
+      setPlayerName(getParticipantName());
       playCelebrate();
     },
   });
 
+  const handleOpenForm = () => {
+    playClick();
+
+    const savedName = getParticipantName();
+    if (savedName) {
+      setPlayerName(savedName);
+    }
+
+    setShowForm(true);
+  };
+
   const handleSubmit = () => {
-    if (!playerName.trim()) {
+    const savedName = getParticipantName();
+    const finalName = playerName.trim() || savedName;
+
+    if (!finalName.trim()) {
       return;
     }
 
     playClick();
 
     submitScore.mutate({
-      player_name: playerName.trim(),
+      player_name: finalName.trim(),
       score: myScore,
       completed_phases: myPhases,
       avatar_color: AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)],
@@ -100,13 +123,17 @@ export default function Ranking() {
             </p>
           </div>
         </div>
+
+        <p className="mt-4 rounded-2xl border border-amber-100 bg-white/80 px-3 py-2 text-xs font-semibold text-amber-700 shadow-sm">
+          Olá, {firstName}! Registre sua caminhada quando quiser compartilhar seu avanço.
+        </p>
       </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="mt-5 mb-5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 p-4 text-white shadow-xl shadow-purple-200/50"
+        className="mb-5 mt-5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 p-4 text-white shadow-xl shadow-purple-200/50"
       >
         <p className="mb-1 text-xs font-semibold opacity-80">Sua caminhada atual</p>
 
@@ -138,10 +165,7 @@ export default function Ranking() {
 
           <Button
             size="sm"
-            onClick={() => {
-              playClick();
-              setShowForm(true);
-            }}
+            onClick={handleOpenForm}
             className="h-8 rounded-xl bg-white text-xs font-bold text-purple-700 hover:bg-white/90"
           >
             Registrar minha caminhada
@@ -157,7 +181,7 @@ export default function Ranking() {
         ) : isError ? (
           <div className="rounded-2xl border border-red-100 bg-red-50 p-5 text-center text-red-700">
             <Trophy className="mx-auto mb-2 h-9 w-9 opacity-70" />
-            <p className="text-sm font-bold">Não foi possível carregar a participação.</p>
+            <p className="text-sm font-bold">Não foi possível carregar a caminhada.</p>
             <p className="mt-1 text-xs">
               {error?.message || "Verifique a conexão com o Supabase e tente novamente."}
             </p>
@@ -258,20 +282,32 @@ export default function Ranking() {
                 </Button>
               </div>
 
-              <p className="mb-4 text-sm text-muted-foreground">
+              <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
                 Sua caminhada atual tem{" "}
-                <span className="font-extrabold text-purple-600">{myScore} pontos da caminhada</span>.
-                Como deseja aparecer na lista?
+                <span className="font-extrabold text-purple-600">
+                  {myScore} pontos da caminhada
+                </span>
+                . Como deseja aparecer na lista?
               </p>
 
-              <Input
-                placeholder="Seu nome ou apelido"
-                value={playerName}
-                onChange={(event) => setPlayerName(event.target.value)}
-                className="mb-4 rounded-xl"
-                maxLength={80}
-                onKeyDown={(event) => event.key === "Enter" && handleSubmit()}
-              />
+              <div className="relative mb-4">
+                <UserRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-purple-400" />
+
+                <Input
+                  placeholder="Seu nome ou apelido"
+                  value={playerName}
+                  onChange={(event) => {
+                    if (submitScore.isError) {
+                      submitScore.reset();
+                    }
+
+                    setPlayerName(event.target.value);
+                  }}
+                  className="rounded-xl pl-9"
+                  maxLength={80}
+                  onKeyDown={(event) => event.key === "Enter" && handleSubmit()}
+                />
+              </div>
 
               <Button
                 onClick={handleSubmit}

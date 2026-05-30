@@ -1,15 +1,24 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, Send } from "lucide-react";
+import { Heart, Send, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useMutation } from "@tanstack/react-query";
 import { createPrayerRequest } from "@/services/prayerRequestService";
+import { getParticipant } from "@/lib/participantSession";
+
+function getParticipantName() {
+  const participant = getParticipant();
+  return participant?.fullName || "";
+}
 
 export default function PrayerRequests() {
-  const [name, setName] = useState("");
+  const participant = getParticipant();
+  const firstName = participant?.firstName || "irmão";
+
+  const [name, setName] = useState(() => getParticipantName());
   const [request, setRequest] = useState("");
   const [anonymous, setAnonymous] = useState(false);
   const [sent, setSent] = useState(false);
@@ -18,11 +27,39 @@ export default function PrayerRequests() {
     mutationFn: createPrayerRequest,
     onSuccess: () => {
       setSent(true);
-      setName("");
       setRequest("");
       setAnonymous(false);
+
+      const savedName = getParticipantName();
+      if (savedName) {
+        setName(savedName);
+      }
     },
   });
+
+  const handleNameChange = (event) => {
+    if (createRequest.isError) {
+      createRequest.reset();
+    }
+
+    setName(event.target.value);
+  };
+
+  const handleRequestChange = (event) => {
+    if (createRequest.isError) {
+      createRequest.reset();
+    }
+
+    setRequest(event.target.value);
+  };
+
+  const handleAnonymousChange = (checked) => {
+    if (createRequest.isError) {
+      createRequest.reset();
+    }
+
+    setAnonymous(Boolean(checked));
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -31,8 +68,12 @@ export default function PrayerRequests() {
       return;
     }
 
+    const savedName = getParticipantName();
+
     createRequest.mutate({
-      author_name: anonymous ? "Anônimo" : name.trim() || "Anônimo",
+      author_name: anonymous
+        ? "Anônimo"
+        : name.trim() || savedName || "Anônimo",
       prayer_text: request.trim(),
       is_anonymous: anonymous,
     });
@@ -44,8 +85,13 @@ export default function PrayerRequests() {
         <h1 className="mb-0.5 text-2xl font-extrabold text-foreground">
           Pedido de Oração
         </h1>
-        <p className="mb-5 text-sm text-muted-foreground">
+
+        <p className="mb-2 text-sm text-muted-foreground">
           Compartilhe seu coração conosco.
+        </p>
+
+        <p className="mb-5 rounded-2xl border border-pink-100 bg-white/70 px-3 py-2 text-xs font-semibold text-pink-700 shadow-sm">
+          Olá, {firstName}! Este é um espaço de cuidado, sigilo e oração.
         </p>
       </motion.div>
 
@@ -56,6 +102,7 @@ export default function PrayerRequests() {
         className="mb-6 rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-50 to-pink-50 p-5"
       >
         <Heart className="mb-2 h-6 w-6 text-pink-400" />
+
         <p className="text-sm leading-relaxed text-foreground">
           A liderança da igreja estará orando por cada pedido recebido. Sinta-se à
           vontade para compartilhar o que está em seu coração. Seu pedido será tratado
@@ -77,13 +124,16 @@ export default function PrayerRequests() {
             Pedido enviado!
           </h3>
 
-          <p className="mb-6 text-sm text-muted-foreground">
+          <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
             Estaremos orando por você. Deus ouve e responde cada oração. 🙏
           </p>
 
           <Button
             type="button"
-            onClick={() => setSent(false)}
+            onClick={() => {
+              setSent(false);
+              createRequest.reset();
+            }}
             variant="outline"
             className="rounded-xl"
           >
@@ -104,13 +154,17 @@ export default function PrayerRequests() {
                 Nome (opcional)
               </label>
 
-              <Input
-                placeholder="Seu nome"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                className="rounded-xl"
-                maxLength={80}
-              />
+              <div className="relative">
+                <UserRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-pink-400" />
+
+                <Input
+                  placeholder="Seu nome"
+                  value={name}
+                  onChange={handleNameChange}
+                  className="rounded-xl pl-9"
+                  maxLength={80}
+                />
+              </div>
             </div>
           )}
 
@@ -122,7 +176,7 @@ export default function PrayerRequests() {
             <Textarea
               placeholder="Escreva aqui o que você gostaria que orássemos por você..."
               value={request}
-              onChange={(event) => setRequest(event.target.value)}
+              onChange={handleRequestChange}
               className="min-h-[120px] rounded-xl text-sm"
               maxLength={1000}
             />
@@ -132,11 +186,11 @@ export default function PrayerRequests() {
             </p>
           </div>
 
-          <div className="mb-6 flex items-center gap-2.5">
+          <div className="mb-6 flex items-center gap-2.5 rounded-2xl border border-pink-50 bg-pink-50/50 px-3 py-3">
             <Checkbox
               id="anon"
               checked={anonymous}
-              onCheckedChange={(checked) => setAnonymous(Boolean(checked))}
+              onCheckedChange={handleAnonymousChange}
             />
 
             <label
