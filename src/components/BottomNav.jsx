@@ -5,7 +5,7 @@ import { playNavClick } from '../lib/sounds';
 const items = [
   { path: '/jornada', icon: Map, label: 'Jornada', color: 'text-violet-600', bg: 'bg-violet-100' },
   { path: '/progresso', icon: Trophy, label: 'Progresso', color: 'text-amber-500', bg: 'bg-amber-100' },
-  { path: '/ranking', icon: Medal, label: 'Ranking', color: 'text-orange-500', bg: 'bg-orange-100' },
+  { path: '/ranking', icon: Medal, label: 'Caminhada', color: 'text-orange-500', bg: 'bg-orange-100' },
   { path: '/mural', icon: MessageCircle, label: 'Mural', color: 'text-blue-500', bg: 'bg-blue-100' },
   { path: '/oracao', icon: Heart, label: 'Oração', color: 'text-pink-500', bg: 'bg-pink-100' },
 ];

@@ -178,19 +178,40 @@ export default function Phase() {
         </div>
       </motion.div>
 
-      {/* Video placeholder */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-2xl p-4 shadow-md border border-gray-100 mb-4">
-        <h3 className="font-bold text-sm text-foreground flex items-center gap-2 mb-3">
-          <Play className="h-4 w-4 text-purple-500" /> Vídeo da Etapa
+      {/* Video */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="mb-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-md"
+      >
+        <h3 className="mb-3 flex items-center gap-2 text-sm font-bold text-foreground">
+          <Play className="h-4 w-4 text-purple-500" />
+          Vídeo da Etapa
         </h3>
-        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl aspect-video flex items-center justify-center border border-purple-100">
-          <div className="text-center text-muted-foreground">
-            <div className="w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center mx-auto mb-2">
-              <Play className="h-6 w-6 text-purple-500 ml-0.5" />
-            </div>
-            <p className="text-xs font-semibold text-purple-400">Vídeo em breve</p>
+
+        {phase.videoUrl ? (
+          <div className="overflow-hidden rounded-xl border border-purple-100 bg-black shadow-sm">
+            <iframe
+              className="aspect-video w-full"
+              src={phase.videoUrl}
+              title={`Vídeo da etapa ${phase.title}`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
           </div>
-        </div>
+        ) : (
+          <div className="flex aspect-video items-center justify-center rounded-xl border border-purple-100 bg-gradient-to-br from-purple-50 to-indigo-50">
+            <div className="text-center text-muted-foreground">
+              <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg">
+                <Play className="ml-0.5 h-6 w-6 text-purple-500" />
+              </div>
+              <p className="text-xs font-semibold text-purple-400">
+                Vídeo em breve
+              </p>
+            </div>
+          </div>
+        )}
       </motion.div>
 
       {/* Summary */}
