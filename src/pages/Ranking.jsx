@@ -93,7 +93,7 @@ export default function Ranking() {
 
           <div>
             <h1 className="text-2xl font-extrabold text-foreground">
-              Participação da Jornada
+              Caminhada dos participantes
             </h1>
             <p className="text-xs text-muted-foreground">
               Jornada Congresso 2026 — caminhada dos participantes
@@ -112,7 +112,7 @@ export default function Ranking() {
 
         <div className="flex items-end gap-2">
           <span className="text-4xl font-extrabold">{myScore}</span>
-          <span className="mb-1 text-sm opacity-70">pontos</span>
+          <span className="mb-1 text-sm opacity-70">pontos da caminhada</span>
         </div>
 
         <p className="mt-1 text-xs leading-relaxed text-white/75">
@@ -144,7 +144,7 @@ export default function Ranking() {
             }}
             className="h-8 rounded-xl bg-white text-xs font-bold text-purple-700 hover:bg-white/90"
           >
-            Registrar participação
+            Registrar minha caminhada
           </Button>
         </div>
       </motion.div>
@@ -220,7 +220,7 @@ export default function Ranking() {
 
               <div className="text-right">
                 <p className="font-extrabold text-foreground">{entry.score}</p>
-                <p className="text-[10px] text-muted-foreground">pontos</p>
+                <p className="text-[10px] text-muted-foreground">pontos da caminhada</p>
               </div>
             </motion.div>
           ))
@@ -245,7 +245,7 @@ export default function Ranking() {
             >
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-extrabold text-foreground">
-                  Registrar participação
+                  Registrar minha caminhada
                 </h3>
 
                 <Button
@@ -260,7 +260,7 @@ export default function Ranking() {
 
               <p className="mb-4 text-sm text-muted-foreground">
                 Sua caminhada atual tem{" "}
-                <span className="font-extrabold text-purple-600">{myScore} pontos</span>.
+                <span className="font-extrabold text-purple-600">{myScore} pontos da caminhada</span>.
                 Como deseja aparecer na lista?
               </p>
 
@@ -285,7 +285,7 @@ export default function Ranking() {
               {submitScore.isError && (
                 <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-semibold text-red-600">
                   {submitScore.error?.message ||
-                    "Não foi possível registrar sua participação."}
+                    "Não foi possível registrar sua caminhada."}
                 </p>
               )}
             </motion.div>

@@ -62,7 +62,7 @@ export default function Home() {
           transition={{ delay: 0.3 }}
           className="text-5xl font-extrabold bg-gradient-to-r from-purple-600 via-violet-500 to-indigo-600 bg-clip-text text-transparent mb-1 leading-tight"
         >
-          Jornada 12:12
+          Jornada Congresso 2026
         </motion.h1>
 
         <motion.p
@@ -143,7 +143,7 @@ export default function Home() {
           transition={{ delay: 1.2 }}
           className="text-xs text-muted-foreground mt-5 max-w-[220px]"
         >
-          3 etapas · Quizzes bíblicos · Desafios práticos · Ranking
+          3 etapas · Quizzes bíblicos · Desafios práticos · Caminhada
         </motion.p>
       </div>
     </div>

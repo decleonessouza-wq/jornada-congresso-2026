@@ -266,7 +266,7 @@ export const funnyQuestions = [
       "Humor com foco: quando a alma está cansada, Romanos 12:12 aponta o caminho.",
   },
   {
-    question: "Qual alternativa NÃO combina com a Jornada 12:12?",
+    question: "Qual alternativa NÃO combina com a Jornada Congresso 2026?",
     options: [
       "Alegrar-se na esperança",
       "Ser paciente na tribulação",
@@ -311,7 +311,7 @@ export const funnyQuestions = [
 ];
 
 export const finalMessage =
-  "Parabéns por concluir a Jornada 12:12. Que seu coração chegue ao congresso com esperança renovada, firmeza nas lutas e uma vida de oração mais constante diante de Deus.";
+  "Parabéns por concluir a Jornada Congresso 2026. Que seu coração chegue ao congresso com esperança renovada, firmeza nas lutas e uma vida de oração mais constante diante de Deus.";
 
 export function getPhaseById(id) {
   return phases.find((phase) => phase.id === String(id));

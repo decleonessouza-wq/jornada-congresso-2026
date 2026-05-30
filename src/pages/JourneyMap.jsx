@@ -48,7 +48,7 @@ export default function JourneyMap() {
               <Zap className="h-4 w-4 text-amber-300 fill-amber-300" />
               <span className="text-2xl font-extrabold">{score}</span>
             </div>
-            <p className="text-xs opacity-70">pontos</p>
+            <p className="text-xs opacity-70">pontos da caminhada</p>
           </div>
         </div>
         <div className="h-3 bg-white/20 rounded-full overflow-hidden">

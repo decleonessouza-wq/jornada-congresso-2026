@@ -114,7 +114,7 @@ export default function SplashScreen({ onDone }) {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="text-5xl font-extrabold text-white mb-1 drop-shadow-lg"
             >
-              Jornada 12:12
+              Jornada Congresso 2026
             </motion.h1>
 
             <motion.p
