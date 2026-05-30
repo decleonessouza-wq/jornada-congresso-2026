@@ -20,7 +20,7 @@ export async function listUserScores(limit = 50) {
     .limit(limit);
 
   if (error) {
-    throw new Error(error.message || "Não foi possível carregar a participação da jornada.");
+    throw new Error(error.message || "Não foi possível carregar a sua caminhada na jornada.");
   }
 
   return (data || []).map(normalizeUserScore);
@@ -32,7 +32,7 @@ export async function createUserScore(payload) {
   const completedPhases = Number(payload.completed_phases || 0);
 
   if (!playerName) {
-    throw new Error("Informe seu nome ou apelido para registrar sua participação.");
+    throw new Error("Informe seu nome ou apelido para registrar sua caminhada.");
   }
 
   if (playerName.length > 80) {
@@ -59,7 +59,7 @@ export async function createUserScore(payload) {
     .single();
 
   if (error) {
-    throw new Error(error.message || "Não foi possível registrar sua participação.");
+    throw new Error(error.message || "Não foi possível registrar sua caminhada.");
   }
 
   return normalizeUserScore(data);

@@ -33,18 +33,32 @@ export async function createMuralPost(payload) {
     throw new Error("Escreva uma mensagem antes de compartilhar.");
   }
 
-  const { data, error } = await supabase
-    .from(MURAL_TABLE)
-    .insert({
-      author_name: authorName,
-      message,
-    })
-    .select("id, author_name, message, is_approved, created_at, updated_at")
-    .single();
+  if (authorName.length > 80) {
+    throw new Error("O nome deve ter no máximo 80 caracteres.");
+  }
+
+  if (message.length < 3) {
+    throw new Error("A mensagem precisa ter pelo menos 3 caracteres.");
+  }
+
+  if (message.length > 500) {
+    throw new Error("A mensagem deve ter no máximo 500 caracteres.");
+  }
+
+  const { error } = await supabase.from(MURAL_TABLE).insert({
+    author_name: authorName,
+    message,
+    is_approved: false,
+  });
 
   if (error) {
     throw new Error(error.message || "Não foi possível enviar sua mensagem.");
   }
 
-  return normalizeMuralPost(data);
+  return {
+    success: true,
+    status: "pending_review",
+    message:
+      "Mensagem enviada com sucesso. Após uma breve revisão da equipe, ela poderá aparecer no mural da Jornada.",
+  };
 }

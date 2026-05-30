@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MessageCircle, Send, User } from "lucide-react";
+import { MessageCircle, Send, User, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -42,6 +42,22 @@ export default function Mural() {
     },
   });
 
+  const handleNameChange = (event) => {
+    if (createPost.isSuccess || createPost.isError) {
+      createPost.reset();
+    }
+
+    setName(event.target.value);
+  };
+
+  const handleMessageChange = (event) => {
+    if (createPost.isSuccess || createPost.isError) {
+      createPost.reset();
+    }
+
+    setMessage(event.target.value);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -61,9 +77,34 @@ export default function Mural() {
         <h1 className="mb-0.5 text-2xl font-extrabold text-foreground">
           Mural da Jornada
         </h1>
+
         <p className="mb-5 text-sm text-muted-foreground">
           O que você espera que Deus fale com você no congresso?
         </p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.08 }}
+        className="mb-4 rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-50 to-indigo-50 p-4"
+      >
+        <div className="flex gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white text-purple-600 shadow-sm">
+            <ShieldCheck className="h-5 w-5" />
+          </div>
+
+          <div>
+            <p className="text-sm font-extrabold text-foreground">
+              Espaço de participação dos irmãos
+            </p>
+
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              Para manter o mural edificante e organizado, as mensagens enviadas passam
+              por uma breve revisão da equipe antes de aparecerem publicamente.
+            </p>
+          </div>
+        </div>
       </motion.div>
 
       <motion.form
@@ -76,7 +117,7 @@ export default function Mural() {
         <Input
           placeholder="Seu nome (opcional)"
           value={name}
-          onChange={(event) => setName(event.target.value)}
+          onChange={handleNameChange}
           className="mb-3 rounded-xl"
           maxLength={80}
         />
@@ -84,10 +125,14 @@ export default function Mural() {
         <Textarea
           placeholder="Compartilhe sua expectativa para o congresso..."
           value={message}
-          onChange={(event) => setMessage(event.target.value)}
-          className="mb-3 min-h-[80px] rounded-xl text-sm"
+          onChange={handleMessageChange}
+          className="mb-2 min-h-[80px] rounded-xl text-sm"
           maxLength={500}
         />
+
+        <p className="mb-3 text-right text-[11px] text-muted-foreground">
+          {message.length}/500
+        </p>
 
         <Button
           type="submit"
@@ -105,8 +150,9 @@ export default function Mural() {
         )}
 
         {createPost.isSuccess && (
-          <p className="mt-3 rounded-xl bg-green-50 px-3 py-2 text-xs font-semibold text-green-700">
-            Mensagem compartilhada no mural com sucesso.
+          <p className="mt-3 rounded-xl bg-green-50 px-3 py-2 text-xs font-semibold leading-relaxed text-green-700">
+            {createPost.data?.message ||
+              "Mensagem enviada com sucesso. Após uma breve revisão da equipe, ela poderá aparecer no mural da Jornada."}
           </p>
         )}
       </motion.form>
@@ -118,7 +164,9 @@ export default function Mural() {
       ) : isError ? (
         <div className="rounded-2xl border border-red-100 bg-red-50 p-5 text-center text-red-700">
           <MessageCircle className="mx-auto mb-2 h-8 w-8 opacity-70" />
+
           <p className="text-sm font-bold">Não foi possível carregar o mural.</p>
+
           <p className="mt-1 text-xs">
             {error?.message || "Verifique a conexão com o Supabase e tente novamente."}
           </p>
@@ -126,8 +174,14 @@ export default function Mural() {
       ) : posts.length === 0 ? (
         <div className="py-10 text-center text-muted-foreground">
           <MessageCircle className="mx-auto mb-2 h-8 w-8 opacity-40" />
-          <p className="text-sm font-medium">Seja o primeiro a compartilhar!</p>
-          <p className="mt-1 text-xs">Sua voz faz parte dessa jornada.</p>
+
+          <p className="text-sm font-medium">
+            Ainda não há mensagens aprovadas no mural.
+          </p>
+
+          <p className="mt-1 text-xs">
+            Compartilhe sua expectativa e aguarde a revisão da equipe.
+          </p>
         </div>
       ) : (
         <div className="columns-2 gap-3 space-y-3">
@@ -148,6 +202,7 @@ export default function Mural() {
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/80">
                     <User className="h-3 w-3 text-purple-500" />
                   </div>
+
                   <span className="text-xs font-bold text-foreground">
                     {post.author_name || "Anônimo"}
                   </span>
