@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClientInstance } from "@/lib/query-client";
@@ -13,14 +14,19 @@ import ProgressPage from "./pages/Progress";
 import Mural from "./pages/Mural";
 import PrayerRequests from "./pages/PrayerRequests";
 import Ranking from "./pages/Ranking";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
+
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 const AppLoading = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-purple-50 via-indigo-50 to-pink-50">
     <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-200 border-t-purple-600" />
   </div>
 );
+
+const AdminRoute = ({ children }) => {
+  return <Suspense fallback={<AppLoading />}>{children}</Suspense>;
+};
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } =
@@ -54,9 +60,24 @@ const AuthenticatedApp = () => {
         <Route path="/oracao" element={<PrayerRequests />} />
       </Route>
 
-      {/* Área administrativa */}
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin" element={<AdminDashboard />} />
+      {/* Área administrativa carregada sob demanda */}
+      <Route
+        path="/admin/login"
+        element={
+          <AdminRoute>
+            <AdminLogin />
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
 
       {/* Página não encontrada */}
       <Route path="*" element={<PageNotFound />} />
