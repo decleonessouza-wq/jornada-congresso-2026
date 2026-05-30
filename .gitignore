@@ -1,6 +1,7 @@
 #env
 .env
 .env.*
+.env.local
 
 # Logs
 /logs
@@ -29,3 +30,6 @@ dist-ssr
 
 .env
 .vite
+
+# Permitir exemplo público de variáveis de ambiente
+!.env.example
