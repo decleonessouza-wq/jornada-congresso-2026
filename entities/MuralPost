@@ -1,0 +1,17 @@
+{
+  "name": "MuralPost",
+  "type": "object",
+  "properties": {
+    "author_name": {
+      "type": "string",
+      "title": "Nome"
+    },
+    "message": {
+      "type": "string",
+      "title": "Mensagem"
+    }
+  },
+  "required": [
+    "message"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "PrayerRequest",
+  "type": "object",
+  "properties": {
+    "author_name": {
+      "type": "string",
+      "title": "Nome"
+    },
+    "prayer_text": {
+      "type": "string",
+      "title": "Pedido de Ora\u00e7\u00e3o"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "title": "An\u00f4nimo",
+      "default": false
+    }
+  },
+  "required": [
+    "prayer_text"
+  ]
+}
