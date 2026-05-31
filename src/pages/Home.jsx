@@ -1,6 +1,17 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Sparkles, BookOpen, ArrowRight, Star, Zap, UserRound } from "lucide-react";
+import {
+  Sparkles,
+  BookOpen,
+  ArrowRight,
+  Star,
+  Zap,
+  UserRound,
+  PlayCircle,
+  Puzzle,
+  CheckCircle2,
+  Info,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { playClick } from "../lib/sounds";
 import { getParticipant } from "@/lib/participantSession";
@@ -10,6 +21,33 @@ const starSizeClasses = {
   3: "h-3 w-3",
   4: "h-4 w-4",
 };
+
+const howItWorksSteps = [
+  {
+    title: "Assista e reflita",
+    description: "Comece cada fase assistindo ao vídeo e entendendo a mensagem bíblica.",
+    icon: PlayCircle,
+    gradient: "from-purple-500 to-indigo-500",
+    bg: "bg-purple-50",
+    text: "text-purple-700",
+  },
+  {
+    title: "Participe dos desafios",
+    description: "Responda os quizzes, as pegadinhas e as palavras da etapa.",
+    icon: Puzzle,
+    gradient: "from-amber-400 to-orange-500",
+    bg: "bg-amber-50",
+    text: "text-amber-700",
+  },
+  {
+    title: "Conclua a etapa",
+    description: "Escreva sua reflexão, conclua a fase e avance na caminhada.",
+    icon: CheckCircle2,
+    gradient: "from-green-400 to-emerald-500",
+    bg: "bg-green-50",
+    text: "text-green-700",
+  },
+];
 
 const FloatingStar = ({ x, y, delay, size = 3 }) => (
   <motion.div
@@ -24,7 +62,9 @@ const FloatingStar = ({ x, y, delay, size = 3 }) => (
     }}
   >
     <Star
-      className={`${starSizeClasses[size] || starSizeClasses[3]} fill-amber-300 text-amber-300`}
+      className={`${
+        starSizeClasses[size] || starSizeClasses[3]
+      } fill-amber-300 text-amber-300`}
     />
   </motion.div>
 );
@@ -49,7 +89,7 @@ export default function Home() {
       <FloatingStar x={50} y={8} delay={0.9} size={2} />
       <FloatingStar x={70} y={85} delay={1.5} size={3} />
 
-      <div className="relative z-10 flex flex-col items-center">
+      <div className="relative z-10 flex w-full max-w-md flex-col items-center">
         {/* Logo badge */}
         <motion.div
           initial={{ opacity: 0, scale: 0, rotate: -20 }}
@@ -133,7 +173,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.64 }}
-          className="mb-6 w-full max-w-xs rounded-2xl border border-amber-100 bg-amber-50/80 px-4 py-3"
+          className="mb-5 w-full max-w-xs rounded-2xl border border-amber-100 bg-amber-50/80 px-4 py-3"
         >
           <p className="text-xs font-semibold leading-relaxed text-amber-800">
             {firstName}, avance por cada etapa com calma. Esta jornada é um convite para
@@ -141,11 +181,82 @@ export default function Home() {
           </p>
         </motion.div>
 
+        {/* How it works */}
+        <motion.section
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.72 }}
+          className="mb-6 w-full max-w-xs rounded-[1.7rem] border border-purple-100/70 bg-white/80 p-4 text-left shadow-xl shadow-purple-100/50 backdrop-blur-md"
+        >
+          <div className="mb-3 flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-100">
+              <Info className="h-5 w-5" />
+            </div>
+
+            <div>
+              <h2 className="text-sm font-extrabold text-foreground">
+                Como funciona a Jornada?
+              </h2>
+              <p className="text-[11px] font-semibold text-muted-foreground">
+                Participe em passos simples e com propósito.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-2">
+            {howItWorksSteps.map((step, index) => {
+              const Icon = step.icon;
+
+              return (
+                <motion.div
+                  key={step.title}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.82 + index * 0.1 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`rounded-2xl border border-white/80 ${step.bg} p-3 shadow-sm`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${step.gradient} text-white shadow-md`}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[11px] font-extrabold ${step.text}`}>
+                          Passo {index + 1}
+                        </span>
+                        <span className="h-1 w-1 rounded-full bg-slate-300" />
+                        <h3 className="text-xs font-extrabold text-foreground">
+                          {step.title}
+                        </h3>
+                      </div>
+
+                      <p className="mt-1 text-[11px] font-medium leading-relaxed text-muted-foreground">
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="mt-3 rounded-2xl border border-amber-100 bg-amber-50 px-3 py-2">
+            <p className="text-[11px] font-semibold leading-relaxed text-amber-800">
+              A pontuação é apenas um incentivo visual. O alvo principal é preparar o
+              coração para ouvir a voz de Deus no congresso.
+            </p>
+          </div>
+        </motion.section>
+
         {/* Three phases preview */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
+          transition={{ delay: 1.05 }}
           className="mb-7 flex gap-2"
         >
           {[
@@ -157,7 +268,7 @@ export default function Home() {
               key={phase.label}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.75 + index * 0.1 }}
+              transition={{ delay: 1.1 + index * 0.1 }}
               className="flex flex-col items-center gap-1"
             >
               <div
@@ -177,7 +288,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.95 }}
+          transition={{ delay: 1.25 }}
         >
           <Link to="/jornada" onClick={playClick}>
             <Button
@@ -194,10 +305,10 @@ export default function Home() {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
+          transition={{ delay: 1.42 }}
           className="mt-5 max-w-[240px] text-xs leading-relaxed text-muted-foreground"
         >
-          3 etapas · Quizzes bíblicos · Desafios práticos · Caminhada espiritual
+          3 etapas · 10 quizzes por fase · Pegadinhas bíblicas · Palavras · Caminhada espiritual
         </motion.p>
       </div>
     </div>
