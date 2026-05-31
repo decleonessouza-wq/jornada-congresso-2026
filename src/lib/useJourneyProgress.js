@@ -1,71 +1,247 @@
-import { useState, useEffect, useCallback } from 'react';
-import { phases } from './journeyData';
+import { useCallback, useEffect, useState } from "react";
+import { phases } from "./journeyData";
 
-const STORAGE_KEY = 'jornada1212_progress';
+export const JOURNEY_PROGRESS_STORAGE_KEY = "jornada1212_progress";
 
-const defaultState = {
-  phases: {
-    "1": { quizCorrect: [], crosswordSolved: [], reflection: "", completed: false },
-    "2": { quizCorrect: [], crosswordSolved: [], reflection: "", completed: false },
-    "3": { quizCorrect: [], crosswordSolved: [], reflection: "", completed: false },
+function createDefaultPhaseState() {
+  return {
+    quizCorrect: [],
+    funnyCorrect: [],
+    crosswordSolved: [],
+    reflection: "",
+    completed: false,
+  };
+}
+
+function createDefaultState() {
+  return {
+    phases: phases.reduce((acc, phase) => {
+      acc[phase.id] = createDefaultPhaseState();
+      return acc;
+    }, {}),
+  };
+}
+
+function canUseStorage() {
+  return typeof window !== "undefined" && Boolean(window.localStorage);
+}
+
+function safeParseProgress(rawValue) {
+  try {
+    return rawValue ? JSON.parse(rawValue) : null;
+  } catch {
+    return null;
   }
-};
+}
+
+function mergeProgressWithDefault(savedProgress) {
+  const defaultState = createDefaultState();
+
+  if (!savedProgress?.phases) {
+    return defaultState;
+  }
+
+  return {
+    phases: phases.reduce((acc, phase) => {
+      const savedPhase = savedProgress.phases?.[phase.id] || {};
+
+      acc[phase.id] = {
+        ...createDefaultPhaseState(),
+        ...savedPhase,
+        quizCorrect: Array.isArray(savedPhase.quizCorrect)
+          ? savedPhase.quizCorrect
+          : [],
+        funnyCorrect: Array.isArray(savedPhase.funnyCorrect)
+          ? savedPhase.funnyCorrect
+          : [],
+        crosswordSolved: Array.isArray(savedPhase.crosswordSolved)
+          ? savedPhase.crosswordSolved
+          : [],
+        reflection: savedPhase.reflection || "",
+        completed: Boolean(savedPhase.completed),
+      };
+
+      return acc;
+    }, {}),
+  };
+}
+
+export function getStoredJourneyProgress() {
+  if (!canUseStorage()) {
+    return createDefaultState();
+  }
+
+  const saved = safeParseProgress(
+    localStorage.getItem(JOURNEY_PROGRESS_STORAGE_KEY)
+  );
+
+  return mergeProgressWithDefault(saved);
+}
+
+export function saveJourneyProgress(progress) {
+  if (!canUseStorage()) {
+    return;
+  }
+
+  localStorage.setItem(JOURNEY_PROGRESS_STORAGE_KEY, JSON.stringify(progress));
+}
+
+export function clearJourneyProgress() {
+  if (!canUseStorage()) {
+    return;
+  }
+
+  localStorage.removeItem(JOURNEY_PROGRESS_STORAGE_KEY);
+}
+
+export function resetJourneyProgress() {
+  const defaultState = createDefaultState();
+  saveJourneyProgress(defaultState);
+  return defaultState;
+}
 
 export function useJourneyProgress() {
-  const [progress, setProgress] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return { phases: { ...defaultState.phases, ...parsed.phases } };
-    }
-    return defaultState;
-  });
+  const [progress, setProgress] = useState(() => getStoredJourneyProgress());
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    saveJourneyProgress(progress);
   }, [progress]);
 
   const updatePhase = useCallback((phaseId, data) => {
-    setProgress(prev => ({
-      ...prev,
+    setProgress((previousProgress) => ({
+      ...previousProgress,
       phases: {
-        ...prev.phases,
-        [phaseId]: { ...prev.phases[phaseId], ...data }
-      }
+        ...previousProgress.phases,
+        [phaseId]: {
+          ...createDefaultPhaseState(),
+          ...previousProgress.phases[phaseId],
+          ...data,
+        },
+      },
     }));
   }, []);
 
-  const completePhase = useCallback((phaseId) => {
-    updatePhase(phaseId, { completed: true });
-  }, [updatePhase]);
+  const completePhase = useCallback(
+    (phaseId) => {
+      updatePhase(phaseId, { completed: true });
+    },
+    [updatePhase]
+  );
+
+  const resetProgress = useCallback(() => {
+    const defaultState = resetJourneyProgress();
+    setProgress(defaultState);
+    return defaultState;
+  }, []);
 
   const getCompletedCount = useCallback(() => {
-    return Object.values(progress.phases).filter(p => p.completed).length;
+    return Object.values(progress.phases).filter((phase) => phase.completed).length;
   }, [progress]);
 
   const getOverallProgress = useCallback(() => {
-    return Math.round((getCompletedCount() / 3) * 100);
+    if (!phases.length) {
+      return 0;
+    }
+
+    return Math.round((getCompletedCount() / phases.length) * 100);
   }, [getCompletedCount]);
 
-  const isPhaseUnlocked = useCallback((phaseId) => {
-    const id = parseInt(phaseId);
-    if (id === 1) return true;
-    return progress.phases[String(id - 1)]?.completed === true;
-  }, [progress]);
+  const isPhaseUnlocked = useCallback(
+    (phaseId) => {
+      const currentId = Number(phaseId);
+
+      if (currentId === 1) {
+        return true;
+      }
+
+      return progress.phases[String(currentId - 1)]?.completed === true;
+    },
+    [progress]
+  );
+
+  const getPhaseScore = useCallback(
+    (phaseId) => {
+      const phase = phases.find((item) => item.id === String(phaseId));
+      const phaseProgress = progress.phases[String(phaseId)];
+
+      if (!phase || !phaseProgress) {
+        return 0;
+      }
+
+      let score = 0;
+
+      (phaseProgress.quizCorrect || []).forEach((answer, index) => {
+        if (answer === phase.quiz?.[index]?.correct) {
+          score += 10;
+        }
+      });
+
+      (phaseProgress.funnyCorrect || []).forEach((answer, index) => {
+        if (answer === phase.funnyQuestions?.[index]?.correct) {
+          score += 5;
+        }
+      });
+
+      score += (phaseProgress.crosswordSolved?.length || 0) * 15;
+
+      if (phaseProgress.completed) {
+        score += 50;
+      }
+
+      return score;
+    },
+    [progress]
+  );
 
   const getTotalScore = useCallback(() => {
-    let score = 0;
-    phases.forEach(phase => {
-      const p = progress.phases[phase.id];
-      if (!p) return;
-      (p.quizCorrect || []).forEach((answer, i) => {
-        if (answer === phase.quiz[i]?.correct) score += 10;
-      });
-      score += (p.crosswordSolved?.length || 0) * 15;
-      if (p.completed) score += 50;
-    });
-    return score;
-  }, [progress]);
+    return phases.reduce((total, phase) => total + getPhaseScore(phase.id), 0);
+  }, [getPhaseScore]);
 
-  return { progress, updatePhase, completePhase, getCompletedCount, getOverallProgress, isPhaseUnlocked, getTotalScore };
+  const getPhaseTaskProgress = useCallback(
+    (phaseId) => {
+      const phase = phases.find((item) => item.id === String(phaseId));
+      const phaseProgress = progress.phases[String(phaseId)];
+
+      if (!phase || !phaseProgress) {
+        return {
+          completedTasks: 0,
+          totalTasks: 4,
+        };
+      }
+
+      const quizDone =
+        (phaseProgress.quizCorrect || []).length >= (phase.quiz || []).length;
+
+      const funnyDone =
+        (phaseProgress.funnyCorrect || []).length >=
+        (phase.funnyQuestions || []).length;
+
+      const crosswordDone =
+        (phaseProgress.crosswordSolved || []).length >=
+        (phase.crossword || []).length;
+
+      const reflectionDone = Boolean(phaseProgress.reflection?.trim());
+
+      return {
+        completedTasks: [quizDone, funnyDone, crosswordDone, reflectionDone].filter(
+          Boolean
+        ).length,
+        totalTasks: 4,
+      };
+    },
+    [progress]
+  );
+
+  return {
+    progress,
+    updatePhase,
+    completePhase,
+    resetProgress,
+    getCompletedCount,
+    getOverallProgress,
+    isPhaseUnlocked,
+    getPhaseScore,
+    getTotalScore,
+    getPhaseTaskProgress,
+  };
 }

@@ -24,6 +24,7 @@ export const phases = [
         correct: 1,
         comment:
           "A alegria cristã tem raiz na esperança em Deus, não no controle das circunstâncias.",
+        reference: "Romanos 12:12",
       },
       {
         question:
@@ -37,6 +38,7 @@ export const phases = [
         correct: 2,
         comment:
           "A alegria cristã não nega as lutas, mas enxerga Deus acima delas.",
+        reference: "Habacuque 3:17-18",
       },
       {
         question: "Quando a Bíblia fala de esperança, ela aponta principalmente para:",
@@ -49,6 +51,7 @@ export const phases = [
         correct: 2,
         comment:
           "Esperança bíblica é confiança no caráter e nas promessas do Senhor.",
+        reference: "Romanos 15:13",
       },
       {
         question: "Qual atitude combina com quem se alegra na esperança?",
@@ -61,6 +64,7 @@ export const phases = [
         correct: 1,
         comment:
           "A esperança cristã aponta para Deus mesmo quando o cenário ainda não mudou.",
+        reference: "Salmo 42:11",
       },
       {
         question: "Como essa fase pode ser colocada em prática antes do congresso?",
@@ -73,6 +77,140 @@ export const phases = [
         correct: 0,
         comment:
           "A jornada deve sair da tela e virar atitude cristã no dia a dia.",
+        reference: "1 Tessalonicenses 5:11",
+      },
+      {
+        question: "Em Romanos 15:13, Deus é apresentado como:",
+        options: [
+          "Deus da esperança",
+          "Deus da confusão",
+          "Deus da pressa",
+          "Deus da comparação",
+        ],
+        correct: 0,
+        comment:
+          "A esperança cristã nasce em Deus. Ele é a fonte da alegria, da paz e da confiança.",
+        reference: "Romanos 15:13",
+      },
+      {
+        question: "Segundo Habacuque 3:17-18, mesmo quando tudo parece faltar, o servo de Deus pode:",
+        options: [
+          "Abandonar a fé",
+          "Alegrar-se no Senhor",
+          "Fingir que nada aconteceu",
+          "Viver de aparência",
+        ],
+        correct: 1,
+        comment:
+          "A alegria bíblica não depende da abundância visível, mas da confiança no Senhor.",
+        reference: "Habacuque 3:17-18",
+      },
+      {
+        question: "Qual frase combina melhor com a esperança cristã?",
+        options: [
+          "Eu só creio quando vejo tudo resolvido",
+          "Minha alegria está firmada no Senhor",
+          "Se houver luta, não há motivo para louvar",
+          "Esperança é apenas pensamento positivo",
+        ],
+        correct: 1,
+        comment:
+          "A esperança cristã não é pensamento positivo; é fé firmada no Deus fiel.",
+        reference: "Salmo 62:5",
+      },
+      {
+        question: "Em 1 Pedro 1:3, a esperança do cristão é chamada de:",
+        options: [
+          "Esperança morta",
+          "Esperança viva",
+          "Esperança incerta",
+          "Esperança passageira",
+        ],
+        correct: 1,
+        comment:
+          "A esperança cristã é viva porque está fundamentada na ressurreição de Jesus Cristo.",
+        reference: "1 Pedro 1:3",
+      },
+      {
+        question: "Antes do congresso, como podemos viver a alegria na esperança?",
+        options: [
+          "Orando, participando e esperando em Deus",
+          "Ignorando o tema até o dia do evento",
+          "Reclamando do que ainda falta",
+          "Buscando apenas entretenimento",
+        ],
+        correct: 0,
+        comment:
+          "A preparação espiritual envolve oração, expectativa e confiança no agir de Deus.",
+        reference: "Romanos 12:12",
+      },
+    ],
+    funnyQuestions: [
+      {
+        question:
+          "Se a esperança cristã fosse bateria de celular, o que Romanos 12:12 diria?",
+        options: [
+          "Economize fé e use só no domingo",
+          "Carregue na esperança e siga firme",
+          "Ative o modo reclamação",
+          "Desligue tudo até o congresso",
+        ],
+        correct: 1,
+        comment:
+          "Quando o coração cansa, a esperança em Deus renova a caminhada.",
+        reference: "Romanos 12:12",
+      },
+      {
+        question: "Qual frase NÃO combina com alegria na esperança?",
+        options: [
+          "Deus continua fiel",
+          "Minha esperança está no Senhor",
+          "Só vou me alegrar se tudo sair do meu jeito",
+          "Posso confiar nas promessas de Deus",
+        ],
+        correct: 2,
+        comment:
+          "A alegria cristã não depende de tudo acontecer do nosso jeito.",
+        reference: "Romanos 15:13",
+      },
+      {
+        question: "Se a esperança fosse um aplicativo, qual atualização seria necessária?",
+        options: [
+          "Versão 12.12: confiar mais em Deus",
+          "Versão ansiedade infinita",
+          "Versão reclamar sem parar",
+          "Versão comparar com todo mundo",
+        ],
+        correct: 0,
+        comment:
+          "A melhor atualização do coração é voltar a confiar no Senhor.",
+        reference: "Salmo 42:11",
+      },
+      {
+        question: "Qual item não pode faltar na mochila espiritual para o congresso?",
+        options: [
+          "Esperança em Deus",
+          "Alegria no Senhor",
+          "Confiança nas promessas",
+          "Controle remoto para mandar em tudo",
+        ],
+        correct: 3,
+        comment:
+          "Não controlamos tudo, mas podemos confiar naquele que governa todas as coisas.",
+        reference: "Provérbios 3:5-6",
+      },
+      {
+        question: "Quando alguém diz: 'não tem mais jeito', a esperança bíblica responde:",
+        options: [
+          "Então desiste mesmo",
+          "Vamos reclamar juntos",
+          "Deus ainda é fiel",
+          "Melhor sair da jornada",
+        ],
+        correct: 2,
+        comment:
+          "A esperança cristã olha para a fidelidade de Deus acima das circunstâncias.",
+        reference: "Lamentações 3:21-23",
       },
     ],
     crossword: [
@@ -98,7 +236,7 @@ export const phases = [
     badgeColor: "bg-blue-100 text-blue-700",
     summary:
       "A tribulação não significa ausência de Deus. Muitas vezes, é no meio da luta que aprendemos a confiar, esperar e permanecer firmes no Senhor. Paciência bíblica não é passividade; é firmeza confiante em Deus.",
-    videoUrl: "https://www.youtube.com/embed/your_video_id",
+    videoUrl: "",
     quiz: [
       {
         question: "Romanos 12:12 nos orienta a sermos pacientes em qual situação?",
@@ -106,6 +244,7 @@ export const phases = [
         correct: 0,
         comment:
           "O texto não promete ausência de lutas, mas ensina postura cristã no meio delas.",
+        reference: "Romanos 12:12",
       },
       {
         question: "No sentido bíblico, paciência na tribulação significa:",
@@ -118,6 +257,7 @@ export const phases = [
         correct: 1,
         comment:
           "Paciência é perseverança com fé, não indiferença.",
+        reference: "Tiago 1:2-4",
       },
       {
         question: "Qual resposta é mais coerente com uma fé madura diante da tribulação?",
@@ -130,6 +270,7 @@ export const phases = [
         correct: 2,
         comment:
           "A presença de lutas não anula a fidelidade de Deus.",
+        reference: "Salmo 46:1",
       },
       {
         question: "Qual atitude ajuda a igreja a viver essa fase de forma prática?",
@@ -142,6 +283,7 @@ export const phases = [
         correct: 1,
         comment:
           "Paciência cristã também gera cuidado, comunhão e suporte mútuo.",
+        reference: "Gálatas 6:2",
       },
       {
         question: "O que a tribulação pode produzir quando enfrentada com fé?",
@@ -154,6 +296,134 @@ export const phases = [
         correct: 1,
         comment:
           "A luta pode se tornar lugar de amadurecimento quando estamos firmados no Senhor.",
+        reference: "Romanos 5:3-4",
+      },
+      {
+        question: "Segundo Tiago 1:3, a provação da fé produz:",
+        options: [
+          "Desespero",
+          "Perseverança",
+          "Superioridade",
+          "Frieza espiritual",
+        ],
+        correct: 1,
+        comment:
+          "A provação, quando enfrentada com fé, pode produzir perseverança e maturidade.",
+        reference: "Tiago 1:3",
+      },
+      {
+        question: "Em João 16:33, Jesus disse que no mundo teríamos aflições, mas também afirmou:",
+        options: [
+          "Fujam de toda responsabilidade",
+          "Eu venci o mundo",
+          "A fé elimina qualquer luta",
+          "A oração não será necessária",
+        ],
+        correct: 1,
+        comment:
+          "A confiança do cristão está na vitória de Cristo, mesmo em meio às aflições.",
+        reference: "João 16:33",
+      },
+      {
+        question: "Qual atitude revela paciência bíblica durante uma luta?",
+        options: [
+          "Continuar fiel mesmo sem entender tudo",
+          "Abandonar a comunhão",
+          "Responder tudo com irritação",
+          "Culpar Deus por tudo",
+        ],
+        correct: 0,
+        comment:
+          "Paciência bíblica é permanecer fiel enquanto Deus trabalha no processo.",
+        reference: "Hebreus 10:36",
+      },
+      {
+        question: "Quando um irmão passa por tribulação, a igreja deve:",
+        options: [
+          "Carregar os fardos uns dos outros",
+          "Apenas observar de longe",
+          "Comparar dores",
+          "Dizer que ele não tem fé",
+        ],
+        correct: 0,
+        comment:
+          "A comunhão cristã se revela no cuidado, no apoio e na oração.",
+        reference: "Gálatas 6:2",
+      },
+      {
+        question: "Antes do congresso, como viver a paciência na tribulação?",
+        options: [
+          "Entregando as lutas a Deus e permanecendo firme",
+          "Desistindo da caminhada",
+          "Evitando qualquer reflexão",
+          "Guardando tudo sem buscar ajuda",
+        ],
+        correct: 0,
+        comment:
+          "A preparação espiritual também passa por entregar as lutas ao Senhor com fé.",
+        reference: "1 Pedro 5:7",
+      },
+    ],
+    funnyQuestions: [
+      {
+        question: "Quando a tribulação aperta, qual botão espiritual não devemos apertar?",
+        options: ["Orar", "Confiar", "Permanecer", "Sair correndo da fé"],
+        correct: 3,
+        comment:
+          "A brincadeira lembra que a tribulação pede firmeza, não fuga de Deus.",
+        reference: "Romanos 12:12",
+      },
+      {
+        question: "Se a paciência tivesse Wi-Fi, qual seria a senha?",
+        options: [
+          "confio-no-senhor",
+          "reclamacao123",
+          "desespero-total",
+          "sem-sinal-de-fe",
+        ],
+        correct: 0,
+        comment:
+          "A paciência cristã se conecta à confiança no Senhor.",
+        reference: "Salmo 37:5",
+      },
+      {
+        question: "Qual frase NÃO ajuda em dia de tribulação?",
+        options: [
+          "Vamos orar juntos",
+          "Deus é nosso refúgio",
+          "Permaneça firme",
+          "Drama detectado: fé cancelada",
+        ],
+        correct: 3,
+        comment:
+          "Na tribulação, a fé não deve ser cancelada; deve ser fortalecida.",
+        reference: "Salmo 46:1",
+      },
+      {
+        question: "Se a tribulação fosse uma fila grande, a paciência bíblica diria:",
+        options: [
+          "Vou esperar confiando em Deus",
+          "Vou empurrar todo mundo",
+          "Vou reclamar até resolver",
+          "Vou sair e nunca mais voltar",
+        ],
+        correct: 0,
+        comment:
+          "Paciência não é passividade; é firmeza com confiança.",
+        reference: "Hebreus 10:36",
+      },
+      {
+        question: "Qual kit espiritual combina com dias difíceis?",
+        options: [
+          "Fé, oração e comunhão",
+          "Ansiedade, pressa e isolamento",
+          "Reclamação, comparação e sumiço",
+          "Orgulho, silêncio e distância",
+        ],
+        correct: 0,
+        comment:
+          "Deus usa a fé, a oração e a comunhão para nos fortalecer nas lutas.",
+        reference: "Tiago 5:13",
       },
     ],
     crossword: [
@@ -180,7 +450,7 @@ export const phases = [
     badgeColor: "bg-violet-100 text-violet-700",
     summary:
       "A oração nos mantém ligados a Deus. Perseverar em oração é continuar buscando o Senhor, mesmo quando a resposta ainda não chegou. Antes do congresso, a oração prepara o coração para ouvir e obedecer à voz de Deus.",
-    videoUrl: "https://www.youtube.com/embed/your_video_id",
+    videoUrl: "",
     quiz: [
       {
         question: "Romanos 12:12 nos chama a perseverar em quê?",
@@ -188,6 +458,7 @@ export const phases = [
         correct: 1,
         comment:
           "O versículo fecha apontando para uma vida constante diante de Deus.",
+        reference: "Romanos 12:12",
       },
       {
         question: "Perseverar em oração significa:",
@@ -200,6 +471,7 @@ export const phases = [
         correct: 1,
         comment:
           "Perseverança fala de continuidade, dependência e comunhão com Deus.",
+        reference: "Colossenses 4:2",
       },
       {
         question: "Por que a oração prepara o coração para o congresso?",
@@ -212,6 +484,7 @@ export const phases = [
         correct: 0,
         comment:
           "Oração não é ritual vazio; é relacionamento e dependência do Senhor.",
+        reference: "Jeremias 33:3",
       },
       {
         question: "Qual prática combina melhor com essa fase da jornada?",
@@ -224,6 +497,7 @@ export const phases = [
         correct: 0,
         comment:
           "A preparação espiritual envolve intenção, constância e intercessão.",
+        reference: "1 Tessalonicenses 5:17",
       },
       {
         question: "Uma oração perseverante demonstra:",
@@ -236,6 +510,139 @@ export const phases = [
         correct: 1,
         comment:
           "Quem ora com perseverança reconhece que precisa do Senhor em tudo.",
+        reference: "Filipenses 4:6-7",
+      },
+      {
+        question: "Segundo 1 Tessalonicenses 5:17, o cristão deve:",
+        options: [
+          "Orar sem cessar",
+          "Orar só quando estiver no culto",
+          "Orar apenas se sentir vontade",
+          "Orar apenas por si mesmo",
+        ],
+        correct: 0,
+        comment:
+          "Orar sem cessar fala de uma vida constante diante de Deus.",
+        reference: "1 Tessalonicenses 5:17",
+      },
+      {
+        question: "Em Colossenses 4:2, somos orientados a perseverar na oração com:",
+        options: [
+          "Vigilância e gratidão",
+          "Pressa e distração",
+          "Medo e comparação",
+          "Indiferença e frieza",
+        ],
+        correct: 0,
+        comment:
+          "A oração perseverante é acompanhada de vigilância espiritual e gratidão.",
+        reference: "Colossenses 4:2",
+      },
+      {
+        question: "Qual exemplo bíblico mostra perseverança em oração?",
+        options: [
+          "A igreja orando por Pedro",
+          "Jonas fugindo para Társis",
+          "Esaú vendendo a primogenitura",
+          "Faraó endurecendo o coração",
+        ],
+        correct: 0,
+        comment:
+          "A igreja perseverou em oração, e Deus agiu poderosamente.",
+        reference: "Atos 12:5",
+      },
+      {
+        question: "O que Filipenses 4:6-7 ensina sobre oração?",
+        options: [
+          "Devemos apresentar nossos pedidos a Deus",
+          "Devemos viver dominados pela ansiedade",
+          "Devemos esconder tudo de Deus",
+          "Devemos orar apenas depois da resposta",
+        ],
+        correct: 0,
+        comment:
+          "A oração entrega a ansiedade a Deus e abre espaço para a paz do Senhor.",
+        reference: "Filipenses 4:6-7",
+      },
+      {
+        question: "Antes do congresso, perseverar em oração significa:",
+        options: [
+          "Interceder, buscar a Deus e preparar o coração",
+          "Orar apenas no último dia",
+          "Esperar só a equipe orar",
+          "Trocar oração por ansiedade",
+        ],
+        correct: 0,
+        comment:
+          "A oração prepara o coração para ouvir, obedecer e discernir a vontade de Deus.",
+        reference: "Romanos 12:12",
+      },
+    ],
+    funnyQuestions: [
+      {
+        question: "Se a oração fosse notificação no celular, qual seria a melhor opção?",
+        options: [
+          "Lembrete diário: falar com Deus",
+          "Silenciar Deus por 30 dias",
+          "Responder só quando der tempo",
+          "Modo ocupado para o céu",
+        ],
+        correct: 0,
+        comment:
+          "A oração perseverante faz parte da caminhada diária com Deus.",
+        reference: "1 Tessalonicenses 5:17",
+      },
+      {
+        question: "Qual frase combina menos com perseverança na oração?",
+        options: [
+          "Vou buscar a Deus",
+          "Vou orar pelo congresso",
+          "Vou perseverar mesmo sem sentir vontade",
+          "Vou deixar Deus no vácuo",
+        ],
+        correct: 3,
+        comment:
+          "Deus não deve ficar no vácuo; oração é relacionamento com o Pai.",
+        reference: "Colossenses 4:2",
+      },
+      {
+        question: "Se a oração tivesse botão, qual deveria ser usado mais vezes?",
+        options: [
+          "Enviar para Deus",
+          "Cancelar fé",
+          "Adiar para o próximo ano",
+          "Apagar compromisso espiritual",
+        ],
+        correct: 0,
+        comment:
+          "A oração é o caminho de entrega, comunhão e dependência do Senhor.",
+        reference: "Filipenses 4:6",
+      },
+      {
+        question: "Qual combo combina com uma vida de oração?",
+        options: [
+          "Constância, fé e dependência",
+          "Pressa, sono e desculpa",
+          "Ansiedade, reclamação e fuga",
+          "Distração, orgulho e aparência",
+        ],
+        correct: 0,
+        comment:
+          "Perseverar em oração envolve constância, fé e dependência de Deus.",
+        reference: "Lucas 18:1",
+      },
+      {
+        question: "Antes do congresso, qual é o melhor aquecimento espiritual?",
+        options: [
+          "Oração e coração sensível",
+          "Só escolher a roupa",
+          "Apenas carregar o celular",
+          "Chegar em cima da hora sem preparo",
+        ],
+        correct: 0,
+        comment:
+          "A preparação mais importante para o congresso começa no coração diante de Deus.",
+        reference: "Jeremias 33:3",
       },
     ],
     crossword: [
@@ -252,63 +659,13 @@ export const phases = [
   },
 ];
 
-export const funnyQuestions = [
-  {
-    question: "Se Romanos 12:12 fosse um lembrete no celular, qual seria a notificação mais correta?",
-    options: [
-      "Atualização disponível: reclame mais tarde",
-      "Bateria baixa: carregue na esperança, paciência e oração",
-      "Modo avião: fuja da tribulação",
-      "Alarme cancelado: ore só domingo",
-    ],
-    correct: 1,
-    comment:
-      "Humor com foco: quando a alma está cansada, Romanos 12:12 aponta o caminho.",
-  },
-  {
-    question: "Qual alternativa NÃO combina com a Jornada Congresso 2026?",
-    options: [
-      "Alegrar-se na esperança",
-      "Ser paciente na tribulação",
-      "Perseverar na oração",
-      "Atualizar o app da fé só uma vez por ano",
-    ],
-    correct: 3,
-    comment:
-      "A vida cristã não é atualização anual; é caminhada diária com Deus.",
-  },
-  {
-    question: "Quando a tribulação chega, qual botão espiritual devemos evitar apertar?",
-    options: ["Orar", "Confiar", "Permanecer", "Sair do grupo da fé"],
-    correct: 3,
-    comment:
-      "A brincadeira lembra que comunhão e oração ajudam a permanecer firme.",
-  },
-  {
-    question: "Qual seria o melhor combo de Romanos 12:12?",
-    options: [
-      "Esperança + paciência + oração",
-      "Pressa + ansiedade + Wi-Fi",
-      "Reclamação + comparação + sumiço",
-      "Sono + desculpa + notificação silenciada",
-    ],
-    correct: 0,
-    comment:
-      "O combo certo não é de jogo; é de vida cristã.",
-  },
-  {
-    question: "Se o congresso fosse uma viagem, o que não pode faltar na mala do coração?",
-    options: [
-      "Esperança, paciência e oração",
-      "Orgulho, pressa e distração",
-      "Só roupa bonita e nenhuma preparação",
-      "Carregador do celular, mas nada de oração",
-    ],
-    correct: 0,
-    comment:
-      "A preparação mais importante não é apenas externa; é espiritual.",
-  },
-];
+export const funnyQuestions = phases.flatMap((phase) =>
+  (phase.funnyQuestions || []).map((question) => ({
+    ...question,
+    phaseId: phase.id,
+    phaseTitle: phase.title,
+  }))
+);
 
 export const finalMessage =
   "Parabéns por concluir a Jornada Congresso 2026. Que seu coração chegue ao congresso com esperança renovada, firmeza nas lutas e uma vida de oração mais constante diante de Deus.";

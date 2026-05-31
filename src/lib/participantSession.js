@@ -1,4 +1,4 @@
-const PARTICIPANT_STORAGE_KEY = "jornada-congresso-2026:participant";
+export const PARTICIPANT_STORAGE_KEY = "jornada-congresso-2026:participant";
 
 function canUseStorage() {
   return typeof window !== "undefined" && Boolean(window.localStorage);
@@ -23,7 +23,9 @@ function createId() {
 }
 
 export function getParticipant() {
-  if (!canUseStorage()) return null;
+  if (!canUseStorage()) {
+    return null;
+  }
 
   try {
     const raw = localStorage.getItem(PARTICIPANT_STORAGE_KEY);
@@ -34,7 +36,9 @@ export function getParticipant() {
 }
 
 export function saveParticipant(fullName) {
-  if (!canUseStorage()) return null;
+  if (!canUseStorage()) {
+    return null;
+  }
 
   const normalizedName = normalizeName(fullName);
 
@@ -63,7 +67,9 @@ export function saveParticipant(fullName) {
 }
 
 export function completeParticipantWelcome() {
-  if (!canUseStorage()) return null;
+  if (!canUseStorage()) {
+    return null;
+  }
 
   const participant = getParticipant();
 
@@ -86,7 +92,31 @@ export function completeParticipantWelcome() {
 }
 
 export function clearParticipant() {
-  if (!canUseStorage()) return;
+  if (!canUseStorage()) {
+    return;
+  }
 
   localStorage.removeItem(PARTICIPANT_STORAGE_KEY);
+}
+
+export function exitParticipantSession() {
+  clearParticipant();
+}
+
+export function resetParticipantSession() {
+  clearParticipant();
+}
+
+export function hasParticipant() {
+  return Boolean(getParticipant());
+}
+
+export function getParticipantDisplayName() {
+  const participant = getParticipant();
+  return participant?.fullName || "";
+}
+
+export function getParticipantFirstName() {
+  const participant = getParticipant();
+  return participant?.firstName || "irmão";
 }

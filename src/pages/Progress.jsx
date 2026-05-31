@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Trophy,
   Award,
@@ -8,17 +7,15 @@ import {
   Shield,
   Flame,
   Zap,
-  Star,
-  Smile,
-  Check,
-  X,
-  HelpCircle,
+  LogOut,
+  RotateCcw,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useJourneyProgress } from "../lib/useJourneyProgress";
-import { phases, funnyQuestions, finalMessage } from "../lib/journeyData";
-import { playClick, playCorrect, playWrong, playComplete } from "../lib/sounds";
+import { phases, finalMessage } from "../lib/journeyData";
+import { playClick, playWrong } from "../lib/sounds";
+import { clearParticipant } from "@/lib/participantSession";
 
 const iconMap = { Sun, Shield, Flame };
 
@@ -29,52 +26,53 @@ const messages = [
   "Jornada completa! Seu coração está pronto para o congresso. Glória a Deus!",
 ];
 
-export default function ProgressPage() {
-  const { progress, getOverallProgress, getCompletedCount, getTotalScore } =
-    useJourneyProgress();
+function countCorrectAnswers(savedAnswers = [], questions = []) {
+  return savedAnswers.reduce((total, answer, index) => {
+    return answer === questions[index]?.correct ? total + 1 : total;
+  }, 0);
+}
 
-  const [funnyIndex, setFunnyIndex] = useState(0);
-  const [funnySelected, setFunnySelected] = useState(null);
-  const [showFunnyResult, setShowFunnyResult] = useState(false);
-  const [funnyDone, setFunnyDone] = useState(false);
+export default function ProgressPage() {
+  const {
+    progress,
+    getOverallProgress,
+    getCompletedCount,
+    getTotalScore,
+    resetProgress,
+  } = useJourneyProgress();
 
   const score = getTotalScore();
   const pct = getOverallProgress();
   const completed = getCompletedCount();
-  const msg = messages[completed];
+  const msg = messages[completed] || messages[0];
 
-  const currentFunny = funnyQuestions?.[funnyIndex];
+  function handleExitJourney() {
+    const shouldExit = window.confirm(
+      "Deseja sair da caminhada? Seu progresso será mantido, mas você voltará para a tela inicial e poderá entrar com outro nome ou acessar o painel administrativo."
+    );
 
-  function handleFunnyAnswer(optionIndex) {
-    if (showFunnyResult || !currentFunny) return;
-
-    setFunnySelected(optionIndex);
-    setShowFunnyResult(true);
-
-    if (optionIndex === currentFunny.correct) {
-      playCorrect();
-    } else {
-      playWrong();
+    if (!shouldExit) {
+      return;
     }
 
-    setTimeout(() => {
-      if (funnyIndex < funnyQuestions.length - 1) {
-        setFunnyIndex((current) => current + 1);
-        setFunnySelected(null);
-        setShowFunnyResult(false);
-      } else {
-        setFunnyDone(true);
-        playComplete();
-      }
-    }, 2300);
+    playClick();
+    clearParticipant();
+    window.location.assign("/");
   }
 
-  function restartFunnyQuiz() {
-    playClick();
-    setFunnyIndex(0);
-    setFunnySelected(null);
-    setShowFunnyResult(false);
-    setFunnyDone(false);
+  function handleRestartJourney() {
+    const shouldRestart = window.confirm(
+      "Deseja reiniciar a caminhada? Isso apagará o progresso salvo neste navegador, incluindo quizzes, pegadinhas, palavras e reflexões."
+    );
+
+    if (!shouldRestart) {
+      return;
+    }
+
+    playWrong();
+    resetProgress();
+    clearParticipant();
+    window.location.assign("/");
   }
 
   return (
@@ -83,6 +81,7 @@ export default function ProgressPage() {
         <h1 className="mb-0.5 text-2xl font-extrabold text-foreground">
           Seu Progresso
         </h1>
+
         <p className="mb-6 text-sm text-muted-foreground">
           Acompanhe sua jornada espiritual.
         </p>
@@ -115,18 +114,22 @@ export default function ProgressPage() {
             <p className="mb-1 text-xs opacity-70">Etapas</p>
 
             <div className="flex gap-1.5">
-              {[1, 2, 3].map((item) => (
-                <div
-                  key={item}
-                  className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm font-extrabold ${
-                    item <= completed
-                      ? "bg-white text-purple-700 shadow-md"
-                      : "bg-white/20 text-white/40"
-                  }`}
-                >
-                  {item <= completed ? "✓" : item}
-                </div>
-              ))}
+              {phases.map((phase, index) => {
+                const item = index + 1;
+
+                return (
+                  <div
+                    key={phase.id}
+                    className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm font-extrabold ${
+                      item <= completed
+                        ? "bg-white text-purple-700 shadow-md"
+                        : "bg-white/20 text-white/40"
+                    }`}
+                  >
+                    {item <= completed ? "✓" : item}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -158,12 +161,38 @@ export default function ProgressPage() {
 
       <div className="mb-6 space-y-3">
         {phases.map((phase, index) => {
-          const done = progress.phases[phase.id]?.completed;
-          const phaseData = progress.phases[phase.id];
-          const quizScore = (phaseData?.quizCorrect?.length || 0) * 10;
-          const crossScore = (phaseData?.crosswordSolved?.length || 0) * 15;
+          const phaseData = progress.phases[phase.id] || {};
+          const done = Boolean(phaseData.completed);
+
+          const quizCorrectCount = countCorrectAnswers(
+            phaseData.quizCorrect || [],
+            phase.quiz || []
+          );
+
+          const funnyCorrectCount = countCorrectAnswers(
+            phaseData.funnyCorrect || [],
+            phase.funnyQuestions || []
+          );
+
+          const quizScore = quizCorrectCount * 10;
+          const funnyScore = funnyCorrectCount * 5;
+          const crossScore = (phaseData.crosswordSolved?.length || 0) * 15;
           const bonusScore = done ? 50 : 0;
-          const phaseTotal = quizScore + crossScore + bonusScore;
+          const phaseTotal = quizScore + funnyScore + crossScore + bonusScore;
+
+          const quizDone =
+            (phaseData.quizCorrect?.length || 0) >= (phase.quiz || []).length;
+
+          const funnyDone =
+            (phaseData.funnyCorrect?.length || 0) >=
+            (phase.funnyQuestions || []).length;
+
+          const crosswordDone =
+            (phaseData.crosswordSolved?.length || 0) >=
+            (phase.crossword || []).length;
+
+          const reflectionDone = Boolean(phaseData.reflection?.trim());
+
           const Icon = iconMap[phase.iconName];
 
           return (
@@ -174,7 +203,7 @@ export default function ProgressPage() {
               transition={{ delay: 0.35 + index * 0.1 }}
               className="rounded-2xl border border-gray-100 bg-white p-4 shadow-md"
             >
-              <div className="mb-2 flex items-center gap-3">
+              <div className="mb-3 flex items-center gap-3">
                 <div
                   className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
                     done
@@ -209,23 +238,61 @@ export default function ProgressPage() {
                 </div>
               </div>
 
-              <div className="flex gap-1.5">
+              <div className="grid grid-cols-4 gap-1.5">
                 {[
-                  { label: "Quiz", value: quizScore },
-                  { label: "Palavras", value: crossScore },
-                  { label: "Bônus", value: bonusScore },
+                  {
+                    label: "Quiz",
+                    value: quizScore,
+                    done: quizDone,
+                  },
+                  {
+                    label: "Pegadinhas",
+                    value: funnyScore,
+                    done: funnyDone,
+                  },
+                  {
+                    label: "Palavras",
+                    value: crossScore,
+                    done: crosswordDone,
+                  },
+                  {
+                    label: "Bônus",
+                    value: bonusScore,
+                    done: done || reflectionDone,
+                  },
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className={`flex-1 rounded-lg py-1 text-center text-[10px] font-bold ${
-                      item.value > 0
+                    className={`rounded-lg py-1 text-center text-[9px] font-bold ${
+                      item.value > 0 || item.done
                         ? "bg-green-50 text-green-700"
                         : "bg-gray-50 text-gray-400"
                     }`}
                   >
                     {item.label}
                     <br />
-                    <span className="text-xs">{item.value}pts</span>
+                    <span className="text-[11px]">{item.value}pts</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-3 grid grid-cols-4 gap-1.5">
+                {[
+                  { label: "Quiz", done: quizDone },
+                  { label: "Peg.", done: funnyDone },
+                  { label: "Pal.", done: crosswordDone },
+                  { label: "Ref.", done: reflectionDone },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className={`rounded-full px-2 py-1 text-center text-[9px] font-extrabold ${
+                      item.done
+                        ? "bg-purple-100 text-purple-700"
+                        : "bg-slate-50 text-slate-400"
+                    }`}
+                  >
+                    {item.done ? "✓ " : ""}
+                    {item.label}
                   </div>
                 ))}
               </div>
@@ -234,125 +301,45 @@ export default function ProgressPage() {
         })}
       </div>
 
-      {/* Pegadinhas */}
       <motion.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.65 }}
-        className="mb-6 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-purple-50 p-4 shadow-md"
+        transition={{ delay: 0.55 }}
+        className="mb-6 rounded-2xl border border-purple-100 bg-white p-4 shadow-md"
       >
-        <div className="mb-3 flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
-            <Smile className="h-5 w-5" />
-          </div>
+        <h2 className="mb-2 text-sm font-extrabold text-foreground">
+          Controles da caminhada
+        </h2>
 
-          <div>
-            <h2 className="text-sm font-extrabold text-foreground">
-              Pegadinhas da Jornada
-            </h2>
-            <p className="text-xs leading-relaxed text-muted-foreground">
-              Um quebra-gelo bíblico com humor leve para fixar Romanos 12:12.
-            </p>
-          </div>
-        </div>
+        <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
+          Use estas opções para voltar à tela inicial, entrar com outro nome,
+          acessar o painel administrativo ou reiniciar tudo para testar novamente.
+        </p>
 
-        {funnyDone ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="rounded-2xl border border-green-200 bg-green-50 p-4 text-center"
+        <div className="grid gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleExitJourney}
+            className="rounded-xl border-purple-100 bg-purple-50 py-5 text-xs font-extrabold text-purple-700"
           >
-            <Trophy className="mx-auto mb-2 h-9 w-9 text-green-600" />
-            <h3 className="text-sm font-extrabold text-green-700">
-              Pegadinhas concluídas!
-            </h3>
-            <p className="mt-1 text-xs leading-relaxed text-green-700/80">
-              Você passou pelo momento descontraído sem sair do foco bíblico. 🙌
-            </p>
+            <LogOut className="mr-2 h-4 w-4" />
+            Sair da caminhada
+          </Button>
 
-            <Button
-              type="button"
-              onClick={restartFunnyQuiz}
-              variant="outline"
-              className="mt-4 rounded-xl border-green-200 text-green-700"
-            >
-              Refazer pegadinhas
-            </Button>
-          </motion.div>
-        ) : (
-          currentFunny && (
-            <div>
-              <div className="mb-3 flex items-center justify-between">
-                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-700">
-                  {funnyIndex + 1}/{funnyQuestions.length}
-                </span>
-
-                <span className="text-[11px] font-semibold text-muted-foreground">
-                  Desafio extra
-                </span>
-              </div>
-
-              <p className="mb-3 text-sm font-bold leading-relaxed text-foreground">
-                {currentFunny.question}
-              </p>
-
-              <div className="space-y-2">
-                {currentFunny.options.map((option, index) => {
-                  const isCorrect = index === currentFunny.correct;
-                  const isSelected = index === funnySelected;
-
-                  let className =
-                    "border-gray-200 bg-white hover:border-amber-200 hover:bg-amber-50";
-
-                  if (showFunnyResult && isCorrect) {
-                    className = "border-green-300 bg-green-50 text-green-700";
-                  } else if (showFunnyResult && isSelected && !isCorrect) {
-                    className = "border-red-300 bg-red-50 text-red-600";
-                  } else if (showFunnyResult) {
-                    className = "border-gray-100 bg-gray-50 text-gray-400";
-                  }
-
-                  return (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => handleFunnyAnswer(index)}
-                      disabled={showFunnyResult}
-                      className={`flex w-full items-center justify-between rounded-xl border px-3 py-3 text-left text-xs font-semibold transition-all active:scale-[0.98] ${className}`}
-                    >
-                      <span>{option}</span>
-
-                      {showFunnyResult && isCorrect && (
-                        <Check className="h-4 w-4 shrink-0 text-green-600" />
-                      )}
-
-                      {showFunnyResult && isSelected && !isCorrect && (
-                        <X className="h-4 w-4 shrink-0 text-red-500" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <AnimatePresence>
-                {showFunnyResult && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="mt-3 rounded-xl border border-purple-100 bg-white px-3 py-2 text-xs leading-relaxed text-muted-foreground"
-                  >
-                    <HelpCircle className="mr-1 inline h-3.5 w-3.5 text-purple-500" />
-                    {currentFunny.comment}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )
-        )}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleRestartJourney}
+            className="rounded-xl border-red-100 bg-red-50 py-5 text-xs font-extrabold text-red-600"
+          >
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Reiniciar caminhada
+          </Button>
+        </div>
       </motion.section>
 
-      {completed < 3 ? (
+      {completed < phases.length ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <Link to="/jornada" onClick={playClick}>
             <Button className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 py-6 font-bold text-white">
@@ -375,6 +362,12 @@ export default function ProgressPage() {
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
             {finalMessage || "Seu coração está preparado. Glória a Deus! 🙌"}
           </p>
+
+          <Link to="/ranking" onClick={playClick}>
+            <Button className="mt-5 w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 py-6 font-bold text-white">
+              Registrar minha caminhada
+            </Button>
+          </Link>
         </motion.div>
       )}
     </div>
