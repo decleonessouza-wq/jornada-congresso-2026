@@ -1,19 +1,54 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, X, HelpCircle, Star } from "lucide-react";
+import { Check, X, HelpCircle, Star, BookOpen } from "lucide-react";
 import { playCorrect, playWrong } from "../lib/sounds";
 
-export default function QuizSection({ quiz, savedAnswers, onComplete }) {
-  const [currentQ, setCurrentQ] = useState(0);
+function countCorrectAnswers(answers = [], quiz = []) {
+  return answers.filter((answer, index) => answer === quiz[index]?.correct).length;
+}
+
+function getInitialQuestionIndex(savedAnswers = [], quiz = []) {
+  if (!quiz.length) {
+    return 0;
+  }
+
+  if (!savedAnswers?.length) {
+    return 0;
+  }
+
+  if (savedAnswers.length >= quiz.length) {
+    return quiz.length - 1;
+  }
+
+  return savedAnswers.length;
+}
+
+export default function QuizSection({
+  quiz,
+  savedAnswers,
+  onComplete,
+  title = "Quiz Bíblico",
+  accent = "purple",
+}) {
+  const safeQuiz = Array.isArray(quiz) ? quiz : [];
+  const safeSavedAnswers = Array.isArray(savedAnswers) ? savedAnswers : [];
+
+  const [currentQ, setCurrentQ] = useState(() =>
+    getInitialQuestionIndex(safeSavedAnswers, safeQuiz)
+  );
   const [selected, setSelected] = useState(null);
   const [showResult, setShowResult] = useState(false);
-  const [answers, setAnswers] = useState([]);
-  const [done, setDone] = useState(savedAnswers?.length === quiz.length);
-  const [score, setScore] = useState(
-    savedAnswers?.filter((answer, index) => answer === quiz[index]?.correct).length || 0
+  const [answers, setAnswers] = useState(() => safeSavedAnswers);
+  const [done, setDone] = useState(
+    () => safeQuiz.length > 0 && safeSavedAnswers.length >= safeQuiz.length
+  );
+  const [score, setScore] = useState(() =>
+    countCorrectAnswers(safeSavedAnswers, safeQuiz)
   );
 
-  if (!quiz?.length) return null;
+  if (!safeQuiz.length) {
+    return null;
+  }
 
   if (done) {
     return (
@@ -34,15 +69,15 @@ export default function QuizSection({ quiz, savedAnswers, onComplete }) {
 
           <div>
             <h3 className="text-sm font-bold text-green-700">
-              Quiz concluído! 🎉
+              {title} concluído! 🎉
             </h3>
             <p className="text-xs text-green-600">
-              {score} de {quiz.length} acertos
+              {score} de {safeQuiz.length} acertos
             </p>
           </div>
 
-          <div className="ml-auto flex gap-0.5">
-            {quiz.map((_, index) => (
+          <div className="ml-auto flex max-w-[92px] flex-wrap justify-end gap-0.5">
+            {safeQuiz.map((_, index) => (
               <Star
                 key={index}
                 className={`h-3.5 w-3.5 ${
@@ -58,10 +93,12 @@ export default function QuizSection({ quiz, savedAnswers, onComplete }) {
     );
   }
 
-  const q = quiz[currentQ];
+  const q = safeQuiz[currentQ];
 
   const handleSelect = (index) => {
-    if (showResult) return;
+    if (showResult) {
+      return;
+    }
 
     const isCorrect = index === q.correct;
 
@@ -79,7 +116,7 @@ export default function QuizSection({ quiz, savedAnswers, onComplete }) {
     }
 
     setTimeout(() => {
-      if (currentQ < quiz.length - 1) {
+      if (currentQ < safeQuiz.length - 1) {
         setCurrentQ((current) => current + 1);
         setSelected(null);
         setShowResult(false);
@@ -87,26 +124,28 @@ export default function QuizSection({ quiz, savedAnswers, onComplete }) {
         setDone(true);
         onComplete(newAnswers);
       }
-    }, 2400);
+    }, 2600);
   };
 
   return (
     <div className="mb-4 rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
           <HelpCircle className="h-4 w-4 text-purple-500" />
-          Quiz Bíblico
+          {title}
         </h3>
 
         <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-semibold text-purple-600">
-          {currentQ + 1}/{quiz.length}
+          {currentQ + 1}/{safeQuiz.length}
         </span>
       </div>
 
       <div className="mb-4 h-2 rounded-full bg-purple-50">
         <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${((currentQ + Number(showResult)) / quiz.length) * 100}%` }}
+          initial={{ width: `${(answers.length / safeQuiz.length) * 100}%` }}
+          animate={{
+            width: `${((currentQ + Number(showResult)) / safeQuiz.length) * 100}%`,
+          }}
           transition={{ duration: 0.4 }}
           className="h-full rounded-full bg-gradient-to-r from-purple-600 to-indigo-600"
         />
@@ -171,10 +210,15 @@ export default function QuizSection({ quiz, savedAnswers, onComplete }) {
                   : "border-amber-100 bg-amber-50 text-amber-800"
               }`}
             >
-              <strong>
-                {selected === q.correct ? "Muito bem!" : "Quase!"}
-              </strong>{" "}
+              <strong>{selected === q.correct ? "Muito bem!" : "Quase!"}</strong>{" "}
               {q.comment || `Resposta correta: ${q.options[q.correct]}.`}
+
+              {q.reference && (
+                <span className="mt-2 flex items-center gap-1 font-bold opacity-80">
+                  <BookOpen className="h-3.5 w-3.5" />
+                  Referência: {q.reference}
+                </span>
+              )}
             </motion.div>
           )}
         </motion.div>
