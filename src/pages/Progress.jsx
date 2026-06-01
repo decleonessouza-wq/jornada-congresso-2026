@@ -9,6 +9,7 @@ import {
   Zap,
   LogOut,
   RotateCcw,
+  Search,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -62,7 +63,7 @@ export default function ProgressPage() {
 
   function handleRestartJourney() {
     const shouldRestart = window.confirm(
-      "Deseja reiniciar a caminhada? Isso apagará o progresso salvo neste navegador, incluindo quizzes, pegadinhas, palavras e reflexões."
+      "Deseja reiniciar a caminhada? Isso apagará o progresso salvo neste navegador, incluindo quizzes, pegadinhas, palavras, caça-palavras e reflexões."
     );
 
     if (!shouldRestart) {
@@ -177,8 +178,16 @@ export default function ProgressPage() {
           const quizScore = quizCorrectCount * 10;
           const funnyScore = funnyCorrectCount * 5;
           const crossScore = (phaseData.crosswordSolved?.length || 0) * 15;
+
+          const wordSearchSolvedCount = phaseData.wordSearchSolved?.length || 0;
+          const wordSearchTotal = phase.wordSearch?.words?.length || 0;
+          const wordSearchScore = wordSearchSolvedCount * 10;
+          const wordSearchDone =
+            wordSearchTotal > 0 && wordSearchSolvedCount >= wordSearchTotal;
+
           const bonusScore = done ? 50 : 0;
-          const phaseTotal = quizScore + funnyScore + crossScore + bonusScore;
+          const phaseTotal =
+            quizScore + funnyScore + crossScore + wordSearchScore + bonusScore;
 
           const quizDone =
             (phaseData.quizCorrect?.length || 0) >= (phase.quiz || []).length;
@@ -238,7 +247,7 @@ export default function ProgressPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-1.5">
+              <div className="grid grid-cols-5 gap-1.5">
                 {[
                   {
                     label: "Quiz",
@@ -246,14 +255,19 @@ export default function ProgressPage() {
                     done: quizDone,
                   },
                   {
-                    label: "Pegadinhas",
+                    label: "Peg.",
                     value: funnyScore,
                     done: funnyDone,
                   },
                   {
-                    label: "Palavras",
+                    label: "Pal.",
                     value: crossScore,
                     done: crosswordDone,
+                  },
+                  {
+                    label: "Caça",
+                    value: wordSearchScore,
+                    done: wordSearchDone,
                   },
                   {
                     label: "Bônus",
@@ -276,11 +290,12 @@ export default function ProgressPage() {
                 ))}
               </div>
 
-              <div className="mt-3 grid grid-cols-4 gap-1.5">
+              <div className="mt-3 grid grid-cols-5 gap-1.5">
                 {[
                   { label: "Quiz", done: quizDone },
                   { label: "Peg.", done: funnyDone },
                   { label: "Pal.", done: crosswordDone },
+                  { label: "Caça", done: wordSearchDone },
                   { label: "Ref.", done: reflectionDone },
                 ].map((item) => (
                   <div
@@ -296,6 +311,47 @@ export default function ProgressPage() {
                   </div>
                 ))}
               </div>
+
+              {phase.wordSearch && (
+                <div
+                  className={`mt-3 rounded-2xl border px-3 py-2 ${
+                    wordSearchDone
+                      ? "border-green-200 bg-green-50"
+                      : "border-amber-100 bg-amber-50"
+                  }`}
+                >
+                  <div className="flex items-start gap-2">
+                    <Search
+                      className={`mt-0.5 h-4 w-4 ${
+                        wordSearchDone ? "text-green-600" : "text-amber-600"
+                      }`}
+                    />
+
+                    <div>
+                      <p
+                        className={`text-xs font-extrabold ${
+                          wordSearchDone ? "text-green-700" : "text-amber-700"
+                        }`}
+                      >
+                        {wordSearchDone
+                          ? "Caça-palavras concluído"
+                          : "Caça-palavras disponível"}
+                      </p>
+
+                      <p
+                        className={`mt-0.5 text-[11px] font-semibold ${
+                          wordSearchDone
+                            ? "text-green-700/80"
+                            : "text-amber-700/80"
+                        }`}
+                      >
+                        {wordSearchSolvedCount}/{wordSearchTotal} palavras encontradas ·{" "}
+                        {wordSearchScore} pontos extras
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
           );
         })}

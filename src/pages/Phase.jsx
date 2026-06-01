@@ -22,6 +22,7 @@ import { getPhaseById } from "../lib/journeyData";
 import { useJourneyProgress } from "../lib/useJourneyProgress";
 import QuizSection from "../components/QuizSection";
 import CrosswordPuzzle from "../components/CrosswordPuzzle";
+import WordSearchPuzzle from "../components/WordSearchPuzzle";
 import { playClick, playCelebrate } from "../lib/sounds";
 
 const iconMap = { Sun, Shield, Flame };
@@ -87,6 +88,11 @@ export default function Phase() {
   const crosswordDone =
     (phaseProgress.crosswordSolved?.length || 0) >=
     (phase.crossword || []).length;
+
+  const wordSearchDone =
+    phase.wordSearch?.words?.length > 0 &&
+    (phaseProgress.wordSearchSolved?.length || 0) >=
+      (phase.wordSearch.words || []).length;
 
   const reflectionDone = Boolean(phaseProgress.reflection?.trim());
 
@@ -286,6 +292,20 @@ export default function Phase() {
             </motion.div>
           ))}
         </div>
+
+        {phase.wordSearch && (
+          <div
+            className={`mt-3 rounded-2xl border px-3 py-2 text-center text-[11px] font-extrabold ${
+              wordSearchDone
+                ? "border-green-200 bg-green-50 text-green-700"
+                : "border-amber-100 bg-amber-50 text-amber-700"
+            }`}
+          >
+            {wordSearchDone
+              ? "✅ Desafio extra concluído: Caça-palavras"
+              : "⭐ Desafio extra disponível: Caça-palavras"}
+          </div>
+        )}
       </motion.div>
 
       {/* Banner */}
@@ -422,6 +442,23 @@ export default function Phase() {
           }
         />
       </motion.div>
+
+      {/* Word search */}
+      {phase.wordSearch && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.28 }}
+        >
+          <WordSearchPuzzle
+            puzzle={phase.wordSearch}
+            savedSolved={phaseProgress.wordSearchSolved || []}
+            onComplete={(solved) =>
+              updatePhase(phaseId, { wordSearchSolved: solved })
+            }
+          />
+        </motion.div>
+      )}
 
       {/* Challenge */}
       <motion.div
