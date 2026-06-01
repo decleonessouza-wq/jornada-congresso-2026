@@ -1,6 +1,14 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart, Send, UserRound } from "lucide-react";
+import {
+  CalendarHeart,
+  Heart,
+  HeartHandshake,
+  Send,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -8,10 +16,25 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useMutation } from "@tanstack/react-query";
 import { createPrayerRequest } from "@/services/prayerRequestService";
 import { getParticipant } from "@/lib/participantSession";
+import { playClick } from "@/lib/sounds";
 
 function getParticipantName() {
   const participant = getParticipant();
   return participant?.fullName || "";
+}
+
+function getDisplayName(name, anonymous) {
+  if (anonymous) {
+    return "irmão";
+  }
+
+  const cleanName = String(name || "").trim();
+
+  if (!cleanName) {
+    return "irmão";
+  }
+
+  return cleanName.split(" ")[0] || "irmão";
 }
 
 export default function PrayerRequests() {
@@ -22,6 +45,7 @@ export default function PrayerRequests() {
   const [request, setRequest] = useState("");
   const [anonymous, setAnonymous] = useState(false);
   const [sent, setSent] = useState(false);
+  const [sentDisplayName, setSentDisplayName] = useState(firstName);
 
   const createRequest = useMutation({
     mutationFn: createPrayerRequest,
@@ -69,11 +93,12 @@ export default function PrayerRequests() {
     }
 
     const savedName = getParticipantName();
+    const authorName = anonymous ? "Anônimo" : name.trim() || savedName || "Anônimo";
+
+    setSentDisplayName(getDisplayName(authorName, anonymous));
 
     createRequest.mutate({
-      author_name: anonymous
-        ? "Anônimo"
-        : name.trim() || savedName || "Anônimo",
+      author_name: authorName,
       prayer_text: request.trim(),
       is_anonymous: anonymous,
     });
@@ -98,8 +123,8 @@ export default function PrayerRequests() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.15 }}
-        className="mb-6 rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-50 to-pink-50 p-5"
+        transition={{ delay: 0.12 }}
+        className="mb-4 rounded-2xl border border-purple-100 bg-gradient-to-r from-purple-50 to-pink-50 p-5"
       >
         <Heart className="mb-2 h-6 w-6 text-pink-400" />
 
@@ -110,35 +135,122 @@ export default function PrayerRequests() {
         </p>
       </motion.div>
 
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.18 }}
+        className="mb-6 rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 via-white to-purple-50 p-5 shadow-sm"
+      >
+        <div className="mb-3 flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
+            <HeartHandshake className="h-5 w-5" />
+          </div>
+
+          <div>
+            <h2 className="text-sm font-extrabold text-foreground">
+              Meu compromisso de oração por você
+            </h2>
+
+            <p className="mt-1 text-xs font-semibold text-muted-foreground">
+              Um propósito de intercessão pela Jornada Congresso 2026.
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-3 text-sm leading-relaxed text-foreground">
+          <p>
+            Durante a Jornada Congresso 2026, estarei orando por cada pedido enviado
+            aqui, apresentando essas necessidades diante de Deus com temor, fé e amor
+            pelos irmãos.
+          </p>
+
+          <p>
+            Também estarei em consagração e jejum no domingo,{" "}
+            <strong>14 de junho</strong>, e durante o congresso, intercedendo para que
+            Deus fortaleça corações, responda segundo a sua vontade e prepare a igreja
+            para viver aquilo que Ele deseja falar conosco.
+          </p>
+
+          <p>
+            Se Deus fizer algo em sua vida, você poderá voltar ao app a qualquer momento
+            e compartilhar seu testemunho. Aquilo que Deus realiza em você também pode
+            fortalecer a fé de outros.
+          </p>
+        </div>
+
+        <div className="mt-4 flex items-center gap-2 rounded-2xl border border-amber-100 bg-white/80 px-3 py-2">
+          <CalendarHeart className="h-4 w-4 text-amber-600" />
+          <p className="text-xs font-extrabold text-amber-800">
+            — Decleones Andrade
+          </p>
+        </div>
+      </motion.div>
+
       {sent ? (
         <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
+          initial={{ scale: 0.94, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="rounded-2xl border border-green-200 bg-white p-8 text-center shadow-sm"
+          className="rounded-2xl border border-green-200 bg-white p-6 text-center shadow-sm"
         >
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
             <Heart className="h-8 w-8 text-green-600" />
           </div>
 
           <h3 className="mb-2 text-lg font-extrabold text-foreground">
-            Pedido enviado!
+            Pedido recebido, {sentDisplayName}!
           </h3>
 
-          <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
-            Estaremos orando por você. Deus ouve e responde cada oração. 🙏
-          </p>
+          <div className="space-y-3 text-left text-sm leading-relaxed text-muted-foreground">
+            <p>
+              Seu pedido foi enviado com sucesso. Eu,{" "}
+              <strong>Decleones Andrade</strong>, responsável por esta Jornada, estarei
+              orando por você e apresentando este pedido diante de Deus até a festa e
+              também durante o congresso.
+            </p>
 
-          <Button
-            type="button"
-            onClick={() => {
-              setSent(false);
-              createRequest.reset();
-            }}
-            variant="outline"
-            className="rounded-xl"
-          >
-            Enviar outro pedido
-          </Button>
+            <p>
+              Meu propósito é interceder com fé, amor e responsabilidade por cada irmão
+              que compartilhar seu pedido aqui. Também estarei em consagração e jejum no
+              domingo, <strong>14 de junho</strong>, e durante o congresso, clamando para
+              que Deus fortaleça corações, responda segundo a sua perfeita vontade e
+              prepare a igreja para viver aquilo que Ele deseja falar conosco.
+            </p>
+
+            <p>
+              Quando Deus fizer algo em sua vida, você poderá voltar a este app a qualquer
+              momento e acessar a área de testemunhos para compartilhar sua bênção. Seu
+              testemunho pode fortalecer a fé de outros irmãos e glorificar o nome do
+              Senhor.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-2">
+            <Link to="/mural?tipo=testemunho" onClick={playClick}>
+              <Button className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 py-6 text-sm font-extrabold text-white">
+                <HeartHandshake className="mr-2 h-4 w-4" />
+                Compartilhar testemunho
+              </Button>
+            </Link>
+
+            <Button
+              type="button"
+              onClick={() => {
+                setSent(false);
+                createRequest.reset();
+              }}
+              variant="outline"
+              className="rounded-xl"
+            >
+              Enviar outro pedido
+            </Button>
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-purple-100 bg-purple-50 px-3 py-2">
+            <p className="text-xs font-semibold leading-relaxed text-purple-700">
+              Você não precisa testemunhar agora. Quando desejar, volte ao app e acesse
+              o mural de testemunhos.
+            </p>
+          </div>
         </motion.div>
       ) : (
         <motion.form

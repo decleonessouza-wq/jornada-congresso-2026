@@ -7,12 +7,14 @@ import {
   Eye,
   EyeOff,
   Heart,
+  HeartHandshake,
   Home,
   Loader2,
   LogOut,
   MessageCircle,
   RefreshCw,
   ShieldCheck,
+  Sparkles,
   Trash2,
   Trophy,
   Users,
@@ -51,6 +53,28 @@ function formatDate(value) {
   } catch {
     return "Data inválida";
   }
+}
+
+function getMuralTypeMeta(type) {
+  if (type === "testimony") {
+    return {
+      label: "Testemunho",
+      pendingLabel: "testemunho pendente",
+      icon: HeartHandshake,
+      badgeClass: "bg-amber-100 text-amber-700",
+      borderClass: "border-amber-200",
+      pendingClass: "border-amber-200 bg-amber-50/60",
+    };
+  }
+
+  return {
+    label: "Expectativa",
+    pendingLabel: "expectativa pendente",
+    icon: Sparkles,
+    badgeClass: "bg-purple-100 text-purple-700",
+    borderClass: "border-purple-100",
+    pendingClass: "border-purple-200 bg-purple-50/60",
+  };
 }
 
 function EmptyState({ icon: Icon, title, description }) {
@@ -117,6 +141,22 @@ export default function AdminDashboard() {
 
   const approvedMuralMessages = useMemo(
     () => muralMessages.filter((item) => item.is_approved),
+    [muralMessages]
+  );
+
+  const pendingTestimonies = useMemo(
+    () =>
+      muralMessages.filter(
+        (item) => item.post_type === "testimony" && !item.is_approved
+      ),
+    [muralMessages]
+  );
+
+  const approvedTestimonies = useMemo(
+    () =>
+      muralMessages.filter(
+        (item) => item.post_type === "testimony" && item.is_approved
+      ),
     [muralMessages]
   );
 
@@ -264,7 +304,7 @@ export default function AdminDashboard() {
                   Painel Administrativo
                 </h1>
                 <p className="mt-1 text-sm leading-relaxed text-slate-500">
-                  Gerencie o mural, acompanhe pedidos de oração e cuide da caminhada
+                  Gerencie expectativas, testemunhos, pedidos de oração e a caminhada
                   dos participantes.
                 </p>
               </div>
@@ -301,14 +341,14 @@ export default function AdminDashboard() {
           </div>
         </header>
 
-        <section className="mb-5 grid gap-3 md:grid-cols-4">
+        <section className="mb-5 grid gap-3 md:grid-cols-5">
           <div className="rounded-3xl border border-purple-100 bg-white p-4 shadow-sm">
             <MessageCircle className="mb-2 h-5 w-5 text-purple-500" />
             <p className="text-2xl font-extrabold text-slate-950">
               {pendingMuralMessages.length}
             </p>
             <p className="text-xs font-semibold text-slate-500">
-              mensagens pendentes
+              itens pendentes
             </p>
           </div>
 
@@ -318,7 +358,17 @@ export default function AdminDashboard() {
               {approvedMuralMessages.length}
             </p>
             <p className="text-xs font-semibold text-slate-500">
-              mensagens aprovadas
+              itens aprovados
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-amber-100 bg-white p-4 shadow-sm">
+            <HeartHandshake className="mb-2 h-5 w-5 text-amber-500" />
+            <p className="text-2xl font-extrabold text-slate-950">
+              {pendingTestimonies.length}
+            </p>
+            <p className="text-xs font-semibold text-slate-500">
+              testemunhos pendentes
             </p>
           </div>
 
@@ -332,8 +382,8 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          <div className="rounded-3xl border border-amber-100 bg-white p-4 shadow-sm">
-            <Users className="mb-2 h-5 w-5 text-amber-500" />
+          <div className="rounded-3xl border border-violet-100 bg-white p-4 shadow-sm">
+            <Users className="mb-2 h-5 w-5 text-violet-500" />
             <p className="text-2xl font-extrabold text-slate-950">
               {userScores.length}
             </p>
@@ -377,8 +427,28 @@ export default function AdminDashboard() {
                 Moderação do Mural
               </h2>
               <p className="mt-1 text-sm text-slate-500">
-                Aprove, oculte ou exclua mensagens enviadas pelos irmãos.
+                Aprove, oculte ou exclua expectativas e testemunhos enviados pelos irmãos.
               </p>
+
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="rounded-2xl bg-purple-50 px-3 py-2">
+                  <p className="text-xs font-extrabold text-purple-700">
+                    Expectativas
+                  </p>
+                  <p className="text-[11px] text-purple-700/70">
+                    Mensagens sobre o que os irmãos esperam que Deus fale no congresso.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-amber-50 px-3 py-2">
+                  <p className="text-xs font-extrabold text-amber-700">
+                    Testemunhos
+                  </p>
+                  <p className="text-[11px] text-amber-700/70">
+                    Relatos de bênçãos, respostas e experiências para edificar a igreja.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {muralQuery.isLoading ? (
@@ -390,86 +460,100 @@ export default function AdminDashboard() {
             ) : muralMessages.length === 0 ? (
               <EmptyState
                 icon={MessageCircle}
-                title="Nenhuma mensagem no mural"
-                description="Quando os irmãos enviarem mensagens, elas aparecerão aqui para revisão."
+                title="Nenhum item no mural"
+                description="Quando os irmãos enviarem expectativas ou testemunhos, eles aparecerão aqui para revisão."
               />
             ) : (
               <div className="grid gap-3 md:grid-cols-2">
-                {muralMessages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`rounded-3xl border bg-white p-4 shadow-sm ${
-                      message.is_approved
-                        ? "border-green-100"
-                        : "border-amber-200 bg-amber-50/60"
-                    }`}
-                  >
-                    <div className="mb-3 flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-extrabold text-slate-900">
-                          {message.author_name || "Anônimo"}
-                        </p>
-                        <p className="text-[11px] font-semibold text-slate-400">
-                          {formatDate(message.created_at)}
-                        </p>
+                {muralMessages.map((message) => {
+                  const typeMeta = getMuralTypeMeta(message.post_type);
+                  const TypeIcon = typeMeta.icon;
+
+                  return (
+                    <div
+                      key={message.id}
+                      className={`rounded-3xl border bg-white p-4 shadow-sm ${
+                        message.is_approved
+                          ? typeMeta.borderClass
+                          : typeMeta.pendingClass
+                      }`}
+                    >
+                      <div className="mb-3 flex items-start justify-between gap-3">
+                        <div>
+                          <div className="mb-1 flex flex-wrap items-center gap-1.5">
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-extrabold ${typeMeta.badgeClass}`}>
+                              <TypeIcon className="h-3 w-3" />
+                              {typeMeta.label}
+                            </span>
+
+                            <span
+                              className={`rounded-full px-2 py-1 text-[10px] font-extrabold ${
+                                message.is_approved
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-amber-100 text-amber-700"
+                              }`}
+                            >
+                              {message.is_approved ? "Aprovada" : "Pendente"}
+                            </span>
+                          </div>
+
+                          <p className="text-sm font-extrabold text-slate-900">
+                            {message.author_name || "Anônimo"}
+                          </p>
+
+                          <p className="text-[11px] font-semibold text-slate-400">
+                            {formatDate(message.created_at)}
+                          </p>
+                        </div>
                       </div>
 
-                      <span
-                        className={`rounded-full px-2 py-1 text-[10px] font-extrabold ${
-                          message.is_approved
-                            ? "bg-green-100 text-green-700"
-                            : "bg-amber-100 text-amber-700"
-                        }`}
-                      >
-                        {message.is_approved ? "Aprovada" : "Pendente"}
-                      </span>
-                    </div>
+                      <p className="mb-4 text-sm leading-relaxed text-slate-700">
+                        {message.message}
+                      </p>
 
-                    <p className="mb-4 text-sm leading-relaxed text-slate-700">
-                      {message.message}
-                    </p>
+                      <div className="flex flex-wrap gap-2">
+                        {!message.is_approved ? (
+                          <Button
+                            size="sm"
+                            disabled={approveMuralMutation.isPending}
+                            onClick={() => approveMuralMutation.mutate(message.id)}
+                            className="rounded-xl bg-green-600 text-white hover:bg-green-700"
+                          >
+                            <CheckCircle2 className="mr-1 h-4 w-4" />
+                            Aprovar
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={hideMuralMutation.isPending}
+                            onClick={() => hideMuralMutation.mutate(message.id)}
+                            className="rounded-xl border-amber-200 text-amber-700"
+                          >
+                            <EyeOff className="mr-1 h-4 w-4" />
+                            Ocultar
+                          </Button>
+                        )}
 
-                    <div className="flex flex-wrap gap-2">
-                      {!message.is_approved ? (
-                        <Button
-                          size="sm"
-                          disabled={approveMuralMutation.isPending}
-                          onClick={() => approveMuralMutation.mutate(message.id)}
-                          className="rounded-xl bg-green-600 text-white hover:bg-green-700"
-                        >
-                          <CheckCircle2 className="mr-1 h-4 w-4" />
-                          Aprovar
-                        </Button>
-                      ) : (
                         <Button
                           size="sm"
                           variant="outline"
-                          disabled={hideMuralMutation.isPending}
-                          onClick={() => hideMuralMutation.mutate(message.id)}
-                          className="rounded-xl border-amber-200 text-amber-700"
+                          disabled={deleteMuralMutation.isPending}
+                          onClick={() =>
+                            confirmDelete(
+                              `Excluir este ${typeMeta.label.toLowerCase()} do mural?`,
+                              () => deleteMuralMutation.mutate(message.id)
+                            )
+                          }
+                          className="rounded-xl border-red-100 text-red-600"
                         >
-                          <EyeOff className="mr-1 h-4 w-4" />
-                          Ocultar
+                          <Trash2 className="mr-1 h-4 w-4" />
+                          Excluir
                         </Button>
-                      )}
-
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={deleteMuralMutation.isPending}
-                        onClick={() =>
-                          confirmDelete("Excluir esta mensagem do mural?", () =>
-                            deleteMuralMutation.mutate(message.id)
-                          )
-                        }
-                        className="rounded-xl border-red-100 text-red-600"
-                      >
-                        <Trash2 className="mr-1 h-4 w-4" />
-                        Excluir
-                      </Button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </motion.section>
