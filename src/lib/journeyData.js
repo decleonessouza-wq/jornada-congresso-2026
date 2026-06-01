@@ -236,7 +236,7 @@ export const phases = [
     badgeColor: "bg-blue-100 text-blue-700",
     summary:
       "A tribulação não significa ausência de Deus. Muitas vezes, é no meio da luta que aprendemos a confiar, esperar e permanecer firmes no Senhor. Paciência bíblica não é passividade; é firmeza confiante em Deus.",
-    videoUrl: "",
+    videoUrl: "https://www.youtube.com/embed/Lk5pOsGMk3w",
     quiz: [
       {
         question: "Romanos 12:12 nos orienta a sermos pacientes em qual situação?",
@@ -450,7 +450,7 @@ export const phases = [
     badgeColor: "bg-violet-100 text-violet-700",
     summary:
       "A oração nos mantém ligados a Deus. Perseverar em oração é continuar buscando o Senhor, mesmo quando a resposta ainda não chegou. Antes do congresso, a oração prepara o coração para ouvir e obedecer à voz de Deus.",
-    videoUrl: "",
+    videoUrl: "https://www.youtube.com/embed/c1DHzL1M39I",
     quiz: [
       {
         question: "Romanos 12:12 nos chama a perseverar em quê?",
