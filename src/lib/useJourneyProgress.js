@@ -8,6 +8,7 @@ function createDefaultPhaseState() {
     quizCorrect: [],
     funnyCorrect: [],
     crosswordSolved: [],
+    wordSearchSolved: [],
     reflection: "",
     completed: false,
   };
@@ -34,6 +35,10 @@ function safeParseProgress(rawValue) {
   }
 }
 
+function normalizeArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
 function mergeProgressWithDefault(savedProgress) {
   const defaultState = createDefaultState();
 
@@ -48,15 +53,10 @@ function mergeProgressWithDefault(savedProgress) {
       acc[phase.id] = {
         ...createDefaultPhaseState(),
         ...savedPhase,
-        quizCorrect: Array.isArray(savedPhase.quizCorrect)
-          ? savedPhase.quizCorrect
-          : [],
-        funnyCorrect: Array.isArray(savedPhase.funnyCorrect)
-          ? savedPhase.funnyCorrect
-          : [],
-        crosswordSolved: Array.isArray(savedPhase.crosswordSolved)
-          ? savedPhase.crosswordSolved
-          : [],
+        quizCorrect: normalizeArray(savedPhase.quizCorrect),
+        funnyCorrect: normalizeArray(savedPhase.funnyCorrect),
+        crosswordSolved: normalizeArray(savedPhase.crosswordSolved),
+        wordSearchSolved: normalizeArray(savedPhase.wordSearchSolved),
         reflection: savedPhase.reflection || "",
         completed: Boolean(savedPhase.completed),
       };
@@ -184,6 +184,12 @@ export function useJourneyProgress() {
 
       score += (phaseProgress.crosswordSolved?.length || 0) * 15;
 
+      /*
+        Caça-palavras é desafio extra.
+        Ele aumenta a experiência e a pontuação, mas não bloqueia a conclusão da fase.
+      */
+      score += (phaseProgress.wordSearchSolved?.length || 0) * 10;
+
       if (phaseProgress.completed) {
         score += 50;
       }
@@ -232,6 +238,33 @@ export function useJourneyProgress() {
     [progress]
   );
 
+  const getWordSearchProgress = useCallback(
+    (phaseId) => {
+      const phase = phases.find((item) => item.id === String(phaseId));
+      const phaseProgress = progress.phases[String(phaseId)];
+
+      if (!phase || !phaseProgress) {
+        return {
+          solved: [],
+          solvedCount: 0,
+          totalWords: 0,
+          completed: false,
+        };
+      }
+
+      const solved = normalizeArray(phaseProgress.wordSearchSolved);
+      const totalWords = phase.wordSearch?.words?.length || 0;
+
+      return {
+        solved,
+        solvedCount: solved.length,
+        totalWords,
+        completed: totalWords > 0 && solved.length >= totalWords,
+      };
+    },
+    [progress]
+  );
+
   return {
     progress,
     updatePhase,
@@ -243,5 +276,6 @@ export function useJourneyProgress() {
     getPhaseScore,
     getTotalScore,
     getPhaseTaskProgress,
+    getWordSearchProgress,
   };
 }
