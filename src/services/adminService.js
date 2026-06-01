@@ -5,9 +5,16 @@ const PRAYER_TABLE = "prayer_requests";
 const SCORES_TABLE = "user_scores";
 const ADMINS_TABLE = "app_admins";
 
+const VALID_POST_TYPES = ["expectation", "testimony"];
+
+function normalizePostType(postType) {
+  return VALID_POST_TYPES.includes(postType) ? postType : "expectation";
+}
+
 function normalizeDateFields(item) {
   return {
     ...item,
+    post_type: item.post_type ? normalizePostType(item.post_type) : item.post_type,
     created_date: item.created_at,
     updated_date: item.updated_at,
   };
@@ -68,10 +75,13 @@ export async function getCurrentSession() {
 }
 
 export async function getCurrentAdminProfile() {
-  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.getSession();
 
   if (sessionError) {
-    throw new Error(sessionError.message || "Não foi possível verificar a sessão.");
+    throw new Error(
+      sessionError.message || "Não foi possível verificar a sessão."
+    );
   }
 
   const userId = sessionData.session?.user?.id;
@@ -87,7 +97,9 @@ export async function getCurrentAdminProfile() {
     .maybeSingle();
 
   if (error) {
-    throw new Error(error.message || "Não foi possível verificar o administrador.");
+    throw new Error(
+      error.message || "Não foi possível verificar o administrador."
+    );
   }
 
   return data;
@@ -96,11 +108,15 @@ export async function getCurrentAdminProfile() {
 export async function listMuralMessagesForAdmin() {
   const { data, error } = await supabase
     .from(MURAL_TABLE)
-    .select("id, author_name, message, is_approved, created_at, updated_at")
+    .select(
+      "id, author_name, message, post_type, is_approved, created_at, updated_at"
+    )
     .order("created_at", { ascending: false });
 
   if (error) {
-    throw new Error(error.message || "Não foi possível carregar as mensagens do mural.");
+    throw new Error(
+      error.message || "Não foi possível carregar as mensagens do mural."
+    );
   }
 
   return (data || []).map(normalizeDateFields);
@@ -118,7 +134,9 @@ export async function approveMuralMessage(id) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", id)
-    .select("id, author_name, message, is_approved, created_at, updated_at")
+    .select(
+      "id, author_name, message, post_type, is_approved, created_at, updated_at"
+    )
     .single();
 
   if (error) {
@@ -140,7 +158,9 @@ export async function hideMuralMessage(id) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", id)
-    .select("id, author_name, message, is_approved, created_at, updated_at")
+    .select(
+      "id, author_name, message, post_type, is_approved, created_at, updated_at"
+    )
     .single();
 
   if (error) {
@@ -173,7 +193,9 @@ export async function listPrayerRequestsForAdmin() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    throw new Error(error.message || "Não foi possível carregar os pedidos de oração.");
+    throw new Error(
+      error.message || "Não foi possível carregar os pedidos de oração."
+    );
   }
 
   return (data || []).map(normalizeDateFields);
@@ -244,13 +266,17 @@ export async function deletePrayerRequest(id) {
 export async function listUserScoresForAdmin() {
   const { data, error } = await supabase
     .from(SCORES_TABLE)
-    .select("id, player_name, score, completed_phases, avatar_color, created_at, updated_at")
+    .select(
+      "id, player_name, score, completed_phases, avatar_color, created_at, updated_at"
+    )
     .order("score", { ascending: false })
     .order("completed_phases", { ascending: false })
     .order("created_at", { ascending: true });
 
   if (error) {
-    throw new Error(error.message || "Não foi possível carregar as participações.");
+    throw new Error(
+      error.message || "Não foi possível carregar as participações."
+    );
   }
 
   return (data || []).map(normalizeDateFields);
